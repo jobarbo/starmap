@@ -278,9 +278,9 @@ function setup() {
 	drawing = true;
 
 	C_WIDTH = min(windowWidth, windowHeight);
-	MULTIPLIER = C_WIDTH / 1500;
-	c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
-	//c = createCanvas(windowWidth, windowHeight);
+	MULTIPLIER = C_WIDTH / 1200;
+	//c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
+	c = createCanvas(windowWidth, windowHeight);
 	rectMode(CENTER);
 	rseed = randomSeed(Math.floor(Math.random() * 100000));
 	nseed = noiseSeed(Math.floor(Math.random() * 100000));
@@ -414,7 +414,7 @@ class Mover {
 		this.initSat = random([0, 0, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
-		this.initS = 0.23 * MULTIPLIER;
+		this.initS = 0.2 * MULTIPLIER;
 		this.hue = this.initHue;
 		this.sat = 20;
 		this.bri = this.initBri;
@@ -458,12 +458,12 @@ class Mover {
 		this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER; */
 
 		//! this one is also interesting although can yield chaotic results
-		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
+		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
 		this.uhigh = 150 * MULTIPLIER;
-
+ */
 		//! this one is the standard one
-		/* 		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
-		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
+		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
+		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER;
 
 		//! this one is the standard one
 		/* 		this.ulow = random([1]) * MULTIPLIER;
