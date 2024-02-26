@@ -236,15 +236,25 @@ let xMax;
 let yMin;
 let yMax;
 let startTime;
-let maxFrames = 1600;
+let maxFrames = 800;
 let C_WIDTH;
 let MULTIPLIER;
 let RATIO = 1;
+
+let drawing = true;
+let elapsedTime = 0;
+let renderStart = Date.now();
+let framesRendered = 0;
+let totalElapsedTime = 0;
 
 let centerX;
 let centerY;
 let borderX;
 let borderY;
+let particleNum = 20000;
+
+let cycle = parseInt((maxFrames * particleNum) / 1170);
+console.log("cycle", cycle);
 
 ({sin, cos, imul, PI} = Math);
 TAU = PI * 2;
@@ -263,43 +273,78 @@ function setup() {
 		pixelDensity(3.0);
 	}
 
+	elapsedTime = 0;
+	framesRendered = 0;
+	drawing = true;
+
 	C_WIDTH = min(windowWidth, windowHeight);
-	MULTIPLIER = C_WIDTH / 1200;
-	//c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
-	c = createCanvas(windowWidth, windowHeight);
+	MULTIPLIER = C_WIDTH / 1500;
+	c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
+	//c = createCanvas(windowWidth, windowHeight);
 	rectMode(CENTER);
 	rseed = randomSeed(Math.floor(Math.random() * 100000));
 	nseed = noiseSeed(Math.floor(Math.random() * 100000));
 	colorMode(HSB, 360, 100, 100, 100);
 	startTime = frameCount;
-	//noCursor();
+	noCursor();
 
 	centerX = width / 2;
 	centerY = height / 2;
 	borderX = features.composition === "compressed" ? width / 3.5 : features.composition === "constrained" ? width / 3 : features.composition === "semiconstrained" ? width / 2.35 : width / 1.9;
 	borderY = features.composition === "compressed" ? height / 2.75 : features.composition === "constrained" ? height / 2.5 : features.composition === "semiconstrained" ? height / 2.25 : height / 1.9;
 	INIT(rseed);
+
+	renderStart = Date.now();
+	let sketch = drawGenerator();
+	function animate() {
+		animation = setTimeout(animate, 0);
+		sketch.next();
+	}
+
+	animate();
 }
 
-function draw() {
-	blendMode(ADD);
-	for (let i = 0; i < movers.length; i++) {
-		//if (frameCount > 20 || frameCount < 2) {
-		movers[i].show();
-		//}
-		movers[i].move();
-	}
-	blendMode(BLEND);
-	noFill();
-	strokeWeight(0.1 * MULTIPLIER);
-	stroke(0, 0, 100, 100);
-	// draw a rectangle the size of the composition with centerX, centerY as the center and borderX, borderY as the width and height
-	//rect(centerX, centerY, borderX * 2, borderY * 2);
-	let elapsedTime = frameCount - startTime;
-	if (elapsedTime > maxFrames) {
-		window.rendered = c.canvas;
-		document.complete = true;
-		noLoop();
+function* drawGenerator() {
+	blendMode(SCREEN);
+	let count = 0;
+	let frameCount = 0;
+	let draw_every = cycle;
+	let looptime = 0;
+	while (true) {
+		for (let i = 0; i < movers.length; i++) {
+			const mover = movers[i];
+			if (features.lazymorning) {
+				if (elapsedTime > 1) {
+					mover.show();
+				}
+			} else {
+				mover.show();
+			}
+
+			mover.move();
+			if (count > draw_every) {
+				count = 0;
+				yield;
+			}
+			count++;
+		}
+
+		elapsedTime = frameCount - startTime;
+
+		showLoadingBar(elapsedTime, maxFrames, renderStart);
+
+		frameCount++;
+		if (elapsedTime > maxFrames && drawing) {
+			window.rendered = c.canvas;
+			document.complete = true;
+			// calculate the time it took to render the image
+			let endTime = Date.now();
+			let timeDiff = endTime - renderStart;
+			console.log("Render time: " + timeDiff + " ms");
+
+			noLoop();
+			return;
+		}
 	}
 }
 
@@ -312,6 +357,7 @@ function INIT(seed) {
 
 	xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
 	yRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+	//yRandDivider = xRandDivider * 6;
 	xMin = -0.01;
 	xMax = 1.01;
 	yMin = -0.01;
@@ -319,7 +365,7 @@ function INIT(seed) {
 	console.log(xRandDivider, yRandDivider);
 
 	let hue = random([30, 35, 40, 190, 195, 200, 205, 210, 215]);
-	for (let i = 0; i < 20000; i++) {
+	for (let i = 0; i < particleNum; i++) {
 		let x = random(xMin, xMax) * width;
 		let y = random(yMin, yMax) * height;
 		let initHue = hue + random(-1, 1);
@@ -334,6 +380,32 @@ function INIT(seed) {
 	//background(221, 100, 60);
 }
 
+function showLoadingBar(elapsedTime, maxFrames, renderStart) {
+	framesRendered++;
+	let currentTime = Date.now();
+	totalElapsedTime = currentTime - renderStart;
+
+	let percent = (elapsedTime / maxFrames) * 100;
+	if (percent > 100) percent = 100;
+
+	let averageFrameTime = totalElapsedTime / framesRendered;
+
+	let remainingFrames = maxFrames - framesRendered;
+	let estimatedTimeRemaining = averageFrameTime * remainingFrames;
+
+	// Convert milliseconds to seconds
+	let timeLeftSec = Math.round(estimatedTimeRemaining / 1000);
+
+	// put the percent in the title of the page
+	document.title = percent.toFixed(0) + "%";
+	/* 	dom_dashboard.innerHTML = percent.toFixed(0) + "%" + " - Time left : " + timeLeftSec + "s";
+
+	if (percent.toFixed(0) >= 100) {
+		dom_dashboard.innerHTML = "Done!";
+		dom_spin.classList.remove("active");
+	} */
+}
+
 class Mover {
 	constructor(x, y, hue, scl1, scl2, ang1, ang2, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, seed, features) {
 		this.x = x;
@@ -342,9 +414,9 @@ class Mover {
 		this.initSat = random([0, 0, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
-		this.initS = 0.12 * MULTIPLIER;
+		this.initS = 0.23 * MULTIPLIER;
 		this.hue = this.initHue;
-		this.sat = 100;
+		this.sat = 20;
 		this.bri = this.initBri;
 		this.a = this.initAlpha;
 		this.s = this.initS;
@@ -382,23 +454,22 @@ class Mover {
 
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
-		/* 		this.ulow = random([75, 100, 150, 200]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER; */
+		/* 		this.ulow = random([50, 75, 100]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER; */
 
 		//! this one is also interesting although can yield chaotic results
-		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
-		this.uhigh = 150 * MULTIPLIER; */
+		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
+		this.uhigh = 150 * MULTIPLIER;
 
 		//! this one is the standard one
 		/* 		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
 		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
 
 		//! this one is the standard one
-		/* 	this.ulow = random([1]) * MULTIPLIER;
-			this.uhigh = random([50]) * MULTIPLIER; */
-
-		this.hueStep = -0.01;
-		this.satDir = random([1]);
+		/* 		this.ulow = random([1]) * MULTIPLIER;
+		this.uhigh = random([50]) * MULTIPLIER; */
+		this.hueStep = 0.05;
+		this.satDir = random([0.01, 0.1, 0.5, 1, 2]);
 	}
 
 	show() {
@@ -409,6 +480,9 @@ class Mover {
 
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.seed, this.oct, this.nvalue, this.uvalue);
+
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
+		this.yRandSkipperVal = this.xRandSkipperVal; */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -423,10 +497,10 @@ class Mover {
 				//! ORIGINAL CONFIGURATION
 				//this.uvalue[i] *= 1.011 * this.uvalueDir[i];
 				this.uvalue[i] += 0.5 * this.uvalueDir[i];
-				this.nvalue[i] += 0.001 * this.nvalueDir[i];
+				this.nvalue[i] += 0.005 * this.nvalueDir[i];
 			}
 
-			/* 			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
+			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
 				this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
 				this.nvalueDir[i] *= -1;
 				//this.lineWeight += 0.1 * MULTIPLIER;
@@ -435,7 +509,7 @@ class Mover {
 			if (this.uvalue[i] <= this.ulow || this.uvalue[i] >= this.uhigh) {
 				this.uvalue[i] = this.uvalue[i] > this.uhigh ? this.ulow : this.uvalue[i] < this.ulow ? this.uhigh : this.uvalue[i];
 				//this.uvalueDir[i] *= -1;
-			} */
+			}
 		}
 
 		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal * MULTIPLIER);
@@ -446,11 +520,11 @@ class Mover {
 		let velocity = createVector((p.x * MULTIPLIER) / this.xRandDivider + skipper.x, (p.y * MULTIPLIER) / this.yRandDivider + skipper.y);
 
 		let totalSpeed = abs(velocity.mag());
-		this.sat = map(totalSpeed, 0, 400, 100, 0, true);
-		this.sat = constrain(this.sat, 0, 50);
+		this.sat = map(totalSpeed, 0, 400, 70, 0, true);
+		this.sat = constrain(this.sat, 0, 70);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 600, 0, 0, true);
+		this.lineWeight = map(totalSpeed, 0, 600, 0, 20, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + random() * this.lineWeight;
@@ -472,8 +546,8 @@ class Mover {
 }
 
 function superCurve(x, y, scl1, scl2, ang1, ang2, seed, octave, nvalue, uvalue) {
-	let nx = x,
-		ny = y,
+	let nx = x + width / 2,
+		ny = y + height / 2,
 		a1 = ang1,
 		a2 = ang2,
 		scale1 = scl1,
