@@ -1,4 +1,4 @@
-let seed = parseInt(Math.floor(Math.random() * 10000000));
+let seed = parseInt(Math.floor(hl.random() * 10000000));
 let noiseCanvasWidth = 1;
 let noiseCanvasHeight = 1;
 
@@ -14,9 +14,9 @@ function dot(v1, v2) {
 let subtract = (v1, v2) => ({x: v1.x - v2.x, y: v1.y - v2.y});
 let multiply = (v1, v2) => ({x: v1.x * v2.x, y: v1.y * v2.y});
 let length = (v) => Math.sqrt(v.x * v.x + v.y * v.y);
-let randomInt = (max) => Math.floor(Math.random() * max);
+let randomInt = (max) => Math.floor(hl.random() * max);
 
-let R = (a = 1) => Math.random() * a;
+let R = (a = 1) => hl.random() * a;
 let L = (x, y) => (x * x + y * y) ** 0.5; // Elements by Euclid 300 BC
 let k = (a, b) => (a > 0 && b > 0 ? L(a, b) : a > b ? a : b);
 
@@ -27,7 +27,7 @@ F = (N, f) => [...Array(N)].map((_, i) => f(i)); // for loop / map / list functi
 
 // A seeded PRNG =========================================================
 //seed = 'das9d7as9d7as'; // random seed]
-//seed = Math.random() * 2 ** 32;
+seed = hl.random() * 2 ** 32;
 
 S = Uint32Array.of(9, 7, 5, 3); // PRNG state
 R = (a = 1) => a * ((a = S[3]), (S[3] = S[2]), (S[2] = S[1]), (a ^= a << 11), (S[0] ^= a ^ (a >>> 8) ^ ((S[1] = S[0]) >>> 19)), S[0] / 2 ** 32); // random function
@@ -218,12 +218,9 @@ function saveArtwork() {
 // url search params
 const sp = new URLSearchParams(window.location.search);
 
-console.log(hl.randomInt(1, 3));
-
-let config_type = parseInt(Math.floor(Math.random() * 3) + 1);
+let config_type = parseInt(hl.randomInt(1, 3));
 console.log(config_type);
 //config_type = 2;
-console.log(config_type);
 
 let features = "";
 let movers = [];
@@ -264,16 +261,8 @@ F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 function setup() {
 	features = "";
-	var ua = window.navigator.userAgent;
-	var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
-	var webkit = !!ua.match(/WebKit/i);
-	var iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
 
-	if (iOSSafari) {
-		pixelDensity(1.0);
-	} else {
-		pixelDensity(3.0);
-	}
+	pixelDensity(dpi(3));
 
 	elapsedTime = 0;
 	framesRendered = 0;
@@ -282,10 +271,12 @@ function setup() {
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
 	c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
-	//c = createCanvas(windowWidth, windowHeight);
 	rectMode(CENTER);
-	rseed = randomSeed(Math.floor(Math.random() * 100000));
-	nseed = noiseSeed(Math.floor(Math.random() * 100000));
+	rseed = randomSeed(hl.randomInt(100000));
+	nseed = noiseSeed(hl.randomInt(100000));
+	let rnd = random(1);
+	console.log("hash", hl.tx.hash);
+	console.log("rnd", rnd);
 	colorMode(HSB, 360, 100, 100, 100);
 	startTime = frameCount;
 	noCursor();
@@ -294,7 +285,7 @@ function setup() {
 	centerY = height / 2;
 	borderX = features.composition === "compressed" ? width / 3.5 : features.composition === "constrained" ? width / 3 : features.composition === "semiconstrained" ? width / 2.35 : width / 1.9;
 	borderY = features.composition === "compressed" ? height / 2.75 : features.composition === "constrained" ? height / 2.5 : features.composition === "semiconstrained" ? height / 2.25 : height / 1.9;
-	INIT(rseed);
+	INIT();
 
 	renderStart = Date.now();
 	let sketch = drawGenerator();
@@ -350,7 +341,7 @@ function* drawGenerator() {
 	}
 }
 
-function INIT(seed) {
+function INIT() {
 	scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
 	scl2 = scl1;
 
@@ -364,6 +355,7 @@ function INIT(seed) {
 	xMax = 1.01;
 	yMin = -0.01;
 	yMax = 1.01;
+	console.log(scl1, scl2, ang1, ang2);
 	console.log(xRandDivider, yRandDivider);
 
 	let hue = random([30, 35, 40, 190, 195, 200, 205, 210, 215]);
@@ -372,7 +364,7 @@ function INIT(seed) {
 		let y = random(yMin, yMax) * height;
 		let initHue = hue + random(-1, 1);
 		initHue = initHue > 360 ? initHue - 360 : initHue < 0 ? initHue + 360 : initHue;
-		movers.push(new Mover(x, y, initHue, scl1 / MULTIPLIER, scl2 / MULTIPLIER, ang1 * MULTIPLIER, ang2 * MULTIPLIER, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, seed, features));
+		movers.push(new Mover(x, y, initHue, scl1 / MULTIPLIER, scl2 / MULTIPLIER, ang1 * MULTIPLIER, ang2 * MULTIPLIER, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features));
 	}
 
 	bgCol = color(random(0, 360), random([0, 2, 5]), features.theme == "bright" ? 93 : 5, 100);
@@ -409,7 +401,7 @@ function showLoadingBar(elapsedTime, maxFrames, renderStart) {
 }
 
 class Mover {
-	constructor(x, y, hue, scl1, scl2, ang1, ang2, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, seed, features) {
+	constructor(x, y, hue, scl1, scl2, ang1, ang2, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features) {
 		this.x = x;
 		this.y = y;
 		this.initHue = hue;
@@ -426,7 +418,6 @@ class Mover {
 		this.scl2 = scl2;
 		this.ang1 = ang1;
 		this.ang2 = ang2;
-		this.seed = seed;
 		this.xRandDivider = xRandDivider;
 		this.yRandDivider = yRandDivider;
 		this.xRandSkipper = 0;
@@ -482,7 +473,7 @@ class Mover {
 	}
 
 	move() {
-		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.seed, this.oct, this.nvalue, this.uvalue);
+		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 		/* 
 		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
 		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]); */
@@ -548,7 +539,7 @@ class Mover {
 	}
 }
 
-function superCurve(x, y, scl1, scl2, ang1, ang2, seed, octave, nvalue, uvalue) {
+function superCurve(x, y, scl1, scl2, ang1, ang2, octave, nvalue, uvalue) {
 	let nx = x,
 		ny = y,
 		a1 = ang1,
