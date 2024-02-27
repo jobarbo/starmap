@@ -218,6 +218,8 @@ function saveArtwork() {
 // url search params
 const sp = new URLSearchParams(window.location.search);
 
+console.log(hl.randomInt(1, 3));
+
 let config_type = parseInt(Math.floor(Math.random() * 3) + 1);
 console.log(config_type);
 //config_type = 2;
@@ -305,7 +307,7 @@ function setup() {
 }
 
 function* drawGenerator() {
-	blendMode(SCREEN);
+	blendMode(ADD);
 	let count = 0;
 	let frameCount = 0;
 	let draw_every = cycle;
@@ -429,10 +431,11 @@ class Mover {
 		this.yRandDivider = yRandDivider;
 		this.xRandSkipper = 0;
 		this.yRandSkipper = 0;
-		this.xRandSkipperVal = random([0.01, 0.05, 0.1, random([0, 0.01, 0.1, 1, 2, 5, 10, 25, 50, 75, 100])]);
+		this.xRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5, 10, 25, 50, 75, 100])]);
+		//this.yRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5, 10, 25, 50, 75, 100])]);
 		this.yRandSkipperVal = this.xRandSkipperVal;
-		/* 		this.xRandSkipperVal = 0;
-		this.yRandSkipperVal = 0; */
+		/* 		this.xRandSkipperVal = 0.1;
+		this.yRandSkipperVal = 0.1; */
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -454,15 +457,15 @@ class Mover {
 
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
-		this.ulow = random([50, 75, 100]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER;
+		/* 	this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER; */
 
 		//! this one is also interesting although can yield chaotic results
-		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
-		this.uhigh = 150 * MULTIPLIER;
- */
+		/* 	this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
+		this.uhigh = 150 * MULTIPLIER; */
+
 		//! this one is the standard one
-		/* this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
+		/* 		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
 		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
 
 		//! this one is the standard one
@@ -480,9 +483,9 @@ class Mover {
 
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.seed, this.oct, this.nvalue, this.uvalue);
-
+		/* 
 		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -500,7 +503,7 @@ class Mover {
 				this.nvalue[i] += 0.005 * this.nvalueDir[i];
 			}
 
-			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
+			/* 			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
 				this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
 				this.nvalueDir[i] *= -1;
 				//this.lineWeight += 0.1 * MULTIPLIER;
@@ -509,7 +512,7 @@ class Mover {
 			if (this.uvalue[i] <= this.ulow || this.uvalue[i] >= this.uhigh) {
 				this.uvalue[i] = this.uvalue[i] > this.uhigh ? this.ulow : this.uvalue[i] < this.ulow ? this.uhigh : this.uvalue[i];
 				//this.uvalueDir[i] *= -1;
-			}
+			} */
 		}
 
 		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal * MULTIPLIER);
@@ -524,7 +527,7 @@ class Mover {
 		this.sat = constrain(this.sat, 0, 0);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 1200, 0.01, 2, true);
+		this.lineWeight = map(totalSpeed, 0, 1200, 0, 20, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + random() * this.lineWeight;
