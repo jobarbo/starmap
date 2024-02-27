@@ -279,8 +279,8 @@ function setup() {
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
-	//c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
-	c = createCanvas(windowWidth, windowHeight);
+	c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
+	//c = createCanvas(windowWidth, windowHeight);
 	rectMode(CENTER);
 	rseed = randomSeed(Math.floor(Math.random() * 100000));
 	nseed = noiseSeed(Math.floor(Math.random() * 100000));
@@ -454,19 +454,19 @@ class Mover {
 
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
-		/* 		this.ulow = random([50, 75, 100]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER; */
+		this.ulow = random([50, 75, 100]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER;
 
 		//! this one is also interesting although can yield chaotic results
 		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
 		this.uhigh = 150 * MULTIPLIER;
  */
 		//! this one is the standard one
-		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
-		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER;
+		/* this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
+		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
 
 		//! this one is the standard one
-		/* 		this.ulow = random([1]) * MULTIPLIER;
+		/* 		this.ulow = random([0.1]) * MULTIPLIER;
 		this.uhigh = random([50]) * MULTIPLIER; */
 		this.hueStep = 0.05;
 		this.satDir = random([0.01, 0.1, 0.5, 1, 2]);
@@ -481,8 +481,8 @@ class Mover {
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.seed, this.oct, this.nvalue, this.uvalue);
 
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
-		this.yRandSkipperVal = this.xRandSkipperVal; */
+		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
+		this.yRandSkipperVal = this.xRandSkipperVal;
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -521,10 +521,10 @@ class Mover {
 
 		let totalSpeed = abs(velocity.mag());
 		this.sat = map(totalSpeed, 0, 400, 70, 0, true);
-		this.sat = constrain(this.sat, 0, 70);
+		this.sat = constrain(this.sat, 0, 0);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 600, 0, 20, true);
+		this.lineWeight = map(totalSpeed, 0, 600, 0.01, 0.01, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + random() * this.lineWeight;
@@ -546,8 +546,8 @@ class Mover {
 }
 
 function superCurve(x, y, scl1, scl2, ang1, ang2, seed, octave, nvalue, uvalue) {
-	let nx = x + width / 2,
-		ny = y + height / 2,
+	let nx = x,
+		ny = y,
 		a1 = ang1,
 		a2 = ang2,
 		scale1 = scl1,
