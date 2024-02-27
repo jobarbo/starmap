@@ -185,7 +185,6 @@ let dpi = (maxDPI = 3.0) => {
 
 // if cmd + s is pressed, save the canvas'
 function saveCanvas(event) {
-	console.log("saveCanvas function called");
 	if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
 		console.log("Save shortcut detected");
 		saveArtwork();
@@ -219,7 +218,7 @@ function saveArtwork() {
 const sp = new URLSearchParams(window.location.search);
 
 let config_type = parseInt(hl.randomInt(1, 3));
-console.log(config_type);
+console.log("config_type: ", config_type);
 //config_type = 2;
 
 let features = "";
@@ -253,13 +252,13 @@ let borderY;
 let particleNum = 20000;
 
 let cycle = parseInt((maxFrames * particleNum) / 1170);
-console.log("cycle", cycle);
 
 ({sin, cos, imul, PI} = Math);
 TAU = PI * 2;
 F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 function setup() {
+	console.log("hash: ", hl.tx.hash);
 	features = "";
 
 	pixelDensity(dpi(3));
@@ -275,8 +274,7 @@ function setup() {
 	rseed = randomSeed(hl.randomInt(100000));
 	nseed = noiseSeed(hl.randomInt(100000));
 	let rnd = random(1);
-	console.log("hash", hl.tx.hash);
-	console.log("rnd", rnd);
+
 	colorMode(HSB, 360, 100, 100, 100);
 	startTime = frameCount;
 	noCursor();
@@ -355,8 +353,6 @@ function INIT() {
 	xMax = 1.01;
 	yMin = -0.01;
 	yMax = 1.01;
-	console.log(scl1, scl2, ang1, ang2);
-	console.log(xRandDivider, yRandDivider);
 
 	let hue = random([30, 35, 40, 190, 195, 200, 205, 210, 215]);
 	for (let i = 0; i < particleNum; i++) {
