@@ -482,7 +482,7 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.seed, this.oct, this.nvalue, this.uvalue);
 
 		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
-		this.yRandSkipperVal = this.xRandSkipperVal;
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -524,7 +524,7 @@ class Mover {
 		this.sat = constrain(this.sat, 0, 0);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 600, 0.01, 0.01, true);
+		this.lineWeight = map(totalSpeed, 0, 1200, 0.01, 2, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + random() * this.lineWeight;
