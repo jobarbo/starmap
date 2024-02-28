@@ -280,6 +280,7 @@ F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 function setup() {
 	console.log("hash:", hl.tx.hash);
+	console.log("token id:", hl.tx.tokenId);
 	features = "";
 
 	pixelDensity(dpi(3));
@@ -364,6 +365,7 @@ function* drawGenerator() {
 function INIT() {
 	scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
 	scl2 = scl1;
+	//scl2 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);;
 
 	ang1 = 1;
 	ang2 = 1;
@@ -423,7 +425,7 @@ class Mover {
 		this.x = x;
 		this.y = y;
 		this.initHue = hue;
-		this.initSat = random([0, 0, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
+		this.initSat = random([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
 		this.initS = 0.2 * MULTIPLIER;
@@ -468,11 +470,11 @@ class Mover {
 
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
-		/* 	this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
+		/* this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
 		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER; */
 
 		//! this one is also interesting although can yield chaotic results
-		/* 	this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
+		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
 		this.uhigh = 150 * MULTIPLIER; */
 
 		//! this one is the standard one
@@ -480,7 +482,7 @@ class Mover {
 		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
 
 		//! this one is the standard one
-		/* 		this.ulow = random([150]) * MULTIPLIER;
+		/* 		this.ulow = random([150]) * MULTIPLIER; 
 		this.uhigh = random([0.001]) * MULTIPLIER; */
 		this.hueStep = 0.05;
 		this.satDir = random([0.01, 0.1, 0.5, 1, 2]);
@@ -495,8 +497,12 @@ class Mover {
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
-		/* this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]); */
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, 10)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, 10)]); */
+
+		//! interesting texture (to try)
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 10])]);
+		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 10])]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -513,7 +519,6 @@ class Mover {
 				this.uvalue[i] += 0.5 * this.uvalueDir[i];
 				this.nvalue[i] += 0.005 * this.nvalueDir[i];
 			}
-
 			/* 			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
 				this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
 				this.nvalueDir[i] *= -1;
@@ -535,7 +540,8 @@ class Mover {
 
 		let totalSpeed = abs(velocity.mag());
 		this.sat = map(totalSpeed, 0, 400, 70, 0, true);
-		this.sat = constrain(this.sat, 0, 0);
+		this.sat += randomGaussian(0, 30);
+		this.sat = constrain(this.sat, 30, 70);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
 		this.lineWeight = map(totalSpeed, 0, 1200, 0, this.lineWeightMax, true);
