@@ -214,11 +214,32 @@ function saveArtwork() {
 	console.log("saved " + fileName);
 }
 
+//* CONSOLE LOGS AND ALL *//
+
+function generateConsoleLogs(params) {
+	//* UNPACK PARAMETERS *//
+	// unpacking parameters we need in main.js and turning them into globals
+	for (var key in params) {
+		window[key] = params[key];
+	}
+	let msg = "%c STARMAP, made by Jonathan Barbeau   | 2024 |  Under Neith";
+	let styles = ["font-size: 12px", "font-family: monospace", "background: black", "display: inline-block", "color: white", "padding: 8px 19px", "border: 1px dashed;"].join(";");
+	console.log("%c☾ ᴛʜᴇ ᴠᴏɪᴅ ᴄᴀʟʟᴇᴅ, ᴡᴇ ᴀɴsᴡᴇʀᴇᴅ.", styles);
+	console.log(msg, styles);
+
+	// console table all params with their values
+	console.table("%cTOKEN FEATURES", "color: white; background: #000000;", "\n", params);
+
+	console.log("%cCONTROLS", "color: white; background: #000000;", "\n", "cmd + s   : save artwork with date", "\n");
+}
+//* END CONSOLE LOGGING *//s
+
 // url search params
 const sp = new URLSearchParams(window.location.search);
 
 let config_type = parseInt(hl.randomInt(1, 3));
 console.log("config_type: ", config_type);
+console.log("seed: ", seed);
 //config_type = 2;
 
 let features = "";
@@ -258,7 +279,7 @@ TAU = PI * 2;
 F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 function setup() {
-	console.log("hash: ", hl.tx.hash);
+	console.log("hash:", hl.tx.hash);
 	features = "";
 
 	pixelDensity(dpi(3));
@@ -266,6 +287,7 @@ function setup() {
 	elapsedTime = 0;
 	framesRendered = 0;
 	drawing = true;
+	generateConsoleLogs({seed, noiseCanvasWidth, noiseCanvasHeight, features, config_type});
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
@@ -296,7 +318,7 @@ function setup() {
 }
 
 function* drawGenerator() {
-	blendMode(ADD);
+	blendMode(SCREEN);
 	let count = 0;
 	let frameCount = 0;
 	let draw_every = cycle;
@@ -348,7 +370,7 @@ function INIT() {
 
 	xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
 	yRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
-	//yRandDivider = xRandDivider * 6;
+
 	xMin = -0.01;
 	xMax = 1.01;
 	yMin = -0.01;
@@ -432,6 +454,7 @@ class Mover {
 		this.centerY = height / 2;
 		this.zombie = false;
 		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
+		this.lineWeightMax = random([0.01, 0.1, 1, 5, 10, 20]);
 		//this.lineWeight = random([0.01, 1, 5, 10, 10]) * MULTIPLIER;
 		//this.lineWeight = 10 * MULTIPLIER;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
@@ -456,8 +479,8 @@ class Mover {
 		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
 
 		//! this one is the standard one
-		/* 		this.ulow = random([0.1]) * MULTIPLIER;
-		this.uhigh = random([50]) * MULTIPLIER; */
+		/* 		this.ulow = random([150]) * MULTIPLIER;
+		this.uhigh = random([0.001]) * MULTIPLIER; */
 		this.hueStep = 0.05;
 		this.satDir = random([0.01, 0.1, 0.5, 1, 2]);
 	}
@@ -470,9 +493,9 @@ class Mover {
 
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
-		/* 
+
 		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]); */
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -514,7 +537,7 @@ class Mover {
 		this.sat = constrain(this.sat, 0, 0);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 1200, 0, 20, true);
+		this.lineWeight = map(totalSpeed, 0, 1200, 0, this.lineWeightMax, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + random() * this.lineWeight;
