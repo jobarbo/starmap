@@ -454,9 +454,10 @@ class Mover {
 		this.centerY = height / 2;
 		this.zombie = false;
 		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
-		this.lineWeightMax = random([0.01, 0.1, 1, 5, 10, 20]);
 		//this.lineWeight = random([0.01, 1, 5, 10, 10]) * MULTIPLIER;
 		//this.lineWeight = 10 * MULTIPLIER;
+		//this.lineWeightMax = random([0.01, 0.1, 1, 5, 10, 20]);
+		this.lineWeightMax = 2;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
 		this.nlimit = 1.5;
@@ -494,8 +495,8 @@ class Mover {
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
-		this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
+		/* this.xRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.01, 10)]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
