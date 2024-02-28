@@ -222,10 +222,11 @@ function generateConsoleLogs(params) {
 	for (var key in params) {
 		window[key] = params[key];
 	}
-	let msg = "%c STARMAP, made by Jonathan Barbeau   | 2024 |  Under Neith";
+	let msg = "%c STARMAP, made by Jonathan Barbeau  | 2024 |  Under Neith";
 	let styles = ["font-size: 12px", "font-family: monospace", "background: black", "display: inline-block", "color: white", "padding: 8px 19px", "border: 1px dashed;"].join(";");
 	console.log("%c☾ ᴛʜᴇ ᴠᴏɪᴅ ᴄᴀʟʟᴇᴅ, ᴡᴇ ᴀɴsᴡᴇʀᴇᴅ.", styles);
 	console.log(msg, styles);
+	console.log("%c∞ 𝒲𝑒 𝒶𝓇𝑒 𝒶𝓁𝓁 𝓤𝓷𝓭𝓮𝓻 𝓝𝓮𝓲𝓽𝓱 ∞", styles);
 
 	// console table all params with their values
 	console.table("%cTOKEN FEATURES", "color: white; background: #000000;", "\n", params);
