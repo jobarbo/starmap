@@ -382,7 +382,7 @@ function INIT() {
 	yMin = -0.01;
 	yMax = 1.01;
 
-	let hue = random([30, 35, 40, 190, 195, 200, 205, 210, 215]);
+	let hue = random([20, 25, 30, 35, 40, 195, 200, 210, 220]);
 	for (let i = 0; i < particleNum; i++) {
 		let x = random(xMin, xMax) * width;
 		let y = random(yMin, yMax) * height;
@@ -508,11 +508,11 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
 		//! map line weight max to frame count
-		this.lineWeightMax = map(frameCount, 150, 500, 20, 1, true);
+		this.lineWeightMax = map(frameCount, 150, 450, 20, 1, true);
 		//!inverted interpolation creates more "starrs"
-		//this.lineWeightMax = map(frameCount, 150, 500, 0.1, 20, true);
+		//this.lineWeightMax = map(frameCount, 0, 150, 0.1, 2, true);
 
-		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true);
+		this.skipperMax = map(frameCount, 150, 450, 10, 0.1, true);
 
 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
 		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
