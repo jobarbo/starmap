@@ -293,7 +293,7 @@ function setup() {
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
-	c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
+	c = createCanvas(windowWidth, windowHeight * RATIO);
 	rectMode(CENTER);
 	rseed = randomSeed(hl.randomInt(100000));
 	nseed = noiseSeed(hl.randomInt(100000));
@@ -444,10 +444,9 @@ class Mover {
 		this.xRandSkipper = 0;
 		this.yRandSkipper = 0;
 		this.xRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5, 10, 25, 50, 75, 100])]);
-		//this.yRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5, 10, 25, 50, 75, 100])]);
 		this.yRandSkipperVal = this.xRandSkipperVal;
-		/* 		this.xRandSkipperVal = 0.1;
-		this.yRandSkipperVal = 0.1; */
+		this.xRandSkipperVal = 0.1;
+		this.yRandSkipperVal = 0.1;
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -471,21 +470,25 @@ class Mover {
 
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
-		/* this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER; */
-
+		/* 		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER;
+ */
 		//! this one is also interesting although can yield chaotic results
 		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
 		this.uhigh = 150 * MULTIPLIER; */
 
-		//! this one is the standard one
+		//! this one is the standard one randomized
 		/* 		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
 		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
 
-		//! this one is the standard one
-		/* 		this.ulow = random([150]) * MULTIPLIER; 
+		//! this one is the standard one but inverted
+		/* 		this.ulow = random([150]) * MULTIPLIER;
 		this.uhigh = random([0.001]) * MULTIPLIER; */
-		this.hueStep = 0.05;
+
+		//! this is the standard one
+		/* 		this.ulow = random([5]) * MULTIPLIER;
+		this.uhigh = random([150]) * MULTIPLIER; */
+		this.hueStep = 0.07;
 		this.satDir = random([0.01, 0.1, 0.5, 1, 2]);
 	}
 
@@ -498,12 +501,12 @@ class Mover {
 	move() {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, 10)]);
+		/* 	this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, 10)]);
 		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, 10)]); */
 
 		//! interesting texture (to try)
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 10])]);
-		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 10])]); */
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, 10])]);
+		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, 10])]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
@@ -531,6 +534,8 @@ class Mover {
 				//this.uvalueDir[i] *= -1;
 			} */
 		}
+		let origin_x = this.x + (p.x * MULTIPLIER) / this.xRandDivider;
+		let origin_y = this.y + (p.y * MULTIPLIER) / this.xRandDivider;
 
 		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal * MULTIPLIER);
 		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal * MULTIPLIER);
@@ -540,12 +545,16 @@ class Mover {
 		let velocity = createVector((p.x * MULTIPLIER) / this.xRandDivider + skipper.x, (p.y * MULTIPLIER) / this.yRandDivider + skipper.y);
 
 		let totalSpeed = abs(velocity.mag());
+		let totalDistance = dist(origin_x, origin_y, this.x, this.y);
+
 		this.sat = map(totalSpeed, 0, 400, 70, 0, true);
 		this.sat += randomGaussian(0, 30);
-		this.sat = constrain(this.sat, 30, 70);
+		this.sat = constrain(this.sat, 0, 0);
 		this.hue += map(totalSpeed, 0, 400, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 1200, 0, this.lineWeightMax, true);
+		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true);
+		//! variable stroke weight
+		this.s = map(totalDistance, 0, 10, 0.2, 0, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + random() * this.lineWeight;
