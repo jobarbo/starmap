@@ -598,23 +598,23 @@ class Mover {
 		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true);
 
 		//!inverted interpolation
-		/* this.lineWeightMax = map(frameCount, 150, 500, 0.1, 20, true);
+		/* this.lineWeightMax = map(frameCount, 150, 500, 1, 20, true);
 		this.skipperMax = map(frameCount, 150, 500, 0.1, 10, true); */
 
 		//!Mirror interpolation creates more "starrs"
-		/* 		this.lineWeightMax = map(frameCount, 150, 500, 0.1, 20, true);
+		/* 		this.lineWeightMax = map(frameCount, 150, 500, 1, 20, true);
 		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true); */
 
 		//!Mirror interpolation config 2
 		/* this.lineWeightMax = map(frameCount, 150, 500, 20, 1, true);
 		this.skipperMax = map(frameCount, 150, 500, 0.1, 10, true); */
 
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
+		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
 
 		//! interesting texture (to try)
-		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
-		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
+		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
