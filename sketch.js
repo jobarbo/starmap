@@ -273,7 +273,7 @@ let borderX;
 let borderY;
 let particleNum = 20000;
 
-let isColored = false;
+let isColored = true;
 //let isColored = hl.randomElement([true, false]);
 
 let cycle = parseInt((maxFrames * particleNum) / 1170);
@@ -313,6 +313,7 @@ function setup() {
 	INIT();
 
 	renderStart = Date.now();
+	generateStars();
 	let sketch = drawGenerator();
 	function animate() {
 		animation = setTimeout(animate, 0);
@@ -394,21 +395,56 @@ function INIT() {
 	// make a gradient background from top to bottom in vanilla JS
 	drawingContext.globalCompositeOperation = "source-over";
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
-	gradient.addColorStop(0, "hsl(0, 0%, 2%)");
-	gradient.addColorStop(1, "hsl(320, 50%, 6%)");
+	gradient.addColorStop(0, "hsl(240, 100%, 2%)");
+	gradient.addColorStop(0.7, "hsl(270, 100%, 5%)");
+	gradient.addColorStop(1, "hsl(260, 30%, 14%)");
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
 
 	//make a circular gradient in the center of the canvas
-	drawingContext.globalCompositeOperation = "source-over";
+	/* 	drawingContext.globalCompositeOperation = "source-over";
 	let radialGradient = drawingContext.createRadialGradient(centerX, centerY, 0, centerX, centerY, width / 2);
-	radialGradient.addColorStop(0.2, "hsl(220, 50%, 3%)");
-	radialGradient.addColorStop(1, "hsl(260, 50%, 4%)");
+	radialGradient.addColorStop(0.2, "hsl(250, 50%, 5%)");
+	radialGradient.addColorStop(0.6, "hsl(260, 50%, 7%)");
+	radialGradient.addColorStop(1, "hsl(270, 50%, 8%)");
 	drawingContext.fillStyle = radialGradient;
-	drawingContext.fillRect(0, 0, width, height);
+	drawingContext.fillRect(0, 0, width, height); */
 
 	//background(45, 100, 100);
 	//background(221, 100, 60);
+}
+
+function generateStars() {
+	//generate stars
+	let stars = [];
+	let starNum = 500;
+	for (let i = 0; i < starNum; i++) {
+		let x = random(0, width);
+		let y = random(0, height);
+		let hue = random([0, 5, 10, 15, 20, 25, 30, 35, 30, 35, 190, 195, 200, 205, 210, 215, 220, 225]);
+		let sat = random([0, 0, 10, 10, 10, 20, 30, 40, 50]);
+		let bri = 100;
+		stars.push(new Stars(x, y, hue, sat, bri, xMin, xMax, yMin, yMax));
+	}
+	blendMode(SCREEN);
+	for (let i = 0; i < starNum; i++) {
+		for (let j = 0; j < 1000; j++) {
+			let xi = 0.9;
+			let yi = 0.15;
+			stars[i].show();
+			stars[i].move(xi, yi);
+		}
+	}
+
+	for (let i = 0; i < starNum; i++) {
+		for (let j = 0; j < 1000; j++) {
+			let xi = 0.15;
+			let yi = 0.9;
+			stars[i].show();
+			stars[i].move(xi, yi);
+		}
+	}
+	blendMode(BLEND);
 }
 
 function showLoadingBar(elapsedTime, maxFrames, renderStart) {
@@ -435,6 +471,43 @@ function showLoadingBar(elapsedTime, maxFrames, renderStart) {
 		dom_dashboard.innerHTML = "Done!";
 		dom_spin.classList.remove("active");
 	} */
+}
+
+class Stars {
+	constructor(x, y, hue, sat, bri, xMin, xMax, yMin, yMax) {
+		this.initX = x;
+		this.initY = y;
+		this.x = x;
+		this.y = y;
+		this.hue = hue;
+		this.sat = sat;
+		this.bri = bri;
+		this.xMin = xMin;
+		this.xMax = xMax;
+		this.yMin = yMin;
+		this.yMax = yMax;
+		this.xRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5])]);
+		this.yRandSkipperVal = this.xRandSkipperVal;
+	}
+
+	show() {
+		fill(this.hue, this.sat, this.bri);
+		noStroke();
+		rect(this.x, this.y, 0.13);
+	}
+
+	move(xi, yi) {
+		this.x = this.initX;
+		this.y = this.initY;
+
+		// Adjust the distribution of random values for star-like shapes
+		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal) * xi + random(-1, 1) * 0.15;
+		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal) * yi + random(-1, 1) * 0.15;
+
+		let skipper = createVector(this.xRandSkipper, this.yRandSkipper);
+		this.x += skipper.x * MULTIPLIER;
+		this.y += skipper.y * MULTIPLIER;
+	}
 }
 
 class Mover {
