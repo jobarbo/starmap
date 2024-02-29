@@ -273,8 +273,8 @@ let borderX;
 let borderY;
 let particleNum = 20000;
 
-let isColored = hl.randomElement([true, false]);
-console.log("isColored: ", isColored);
+let isColored = true;
+//let isColored = hl.randomElement([true, false]);
 
 let cycle = parseInt((maxFrames * particleNum) / 1170);
 
@@ -466,7 +466,7 @@ class Mover {
 		this.lineWeightMax = 2;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
-		this.nlimit = 1.5;
+		this.nlimit = 4.5;
 
 		//! jouer avec le negatif et le positif
 		this.nvalueDir = [-1, -1, -1, -1];
@@ -507,19 +507,28 @@ class Mover {
 	move(frameCount) {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
-		//! map line weight max to frame count
-		this.lineWeightMax = map(frameCount, 150, 450, 20, 1, true);
-		//!inverted interpolation creates more "starrs"
-		//this.lineWeightMax = map(frameCount, 0, 150, 0.1, 2, true);
+		//! standard interpolation
+		this.lineWeightMax = map(frameCount, 150, 500, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true);
 
-		this.skipperMax = map(frameCount, 150, 450, 10, 0.1, true);
+		//!inverted interpolation
+		/* this.lineWeightMax = map(frameCount, 150, 500, 0.1, 20, true);
+		this.skipperMax = map(frameCount, 150, 500, 0.1, 10, true); */
 
-		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		//!Mirror interpolation creates more "starrs"
+		/* 		this.lineWeightMax = map(frameCount, 150, 500, 0.1, 20, true);
+		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true); */
+
+		//!Mirror interpolation config 2
+		/* this.lineWeightMax = map(frameCount, 150, 500, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, 500, 0.1, 10, true); */
+
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
 
 		//! interesting texture (to try)
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
-		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]); */
+		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
+		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
 
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (config_type === 1) {
