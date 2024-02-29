@@ -296,7 +296,7 @@ function setup() {
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
-	c = createCanvas(windowHeight, windowHeight * RATIO);
+	c = createCanvas(windowWidth, windowHeight * RATIO);
 	rectMode(CENTER);
 	rseed = randomSeed(hl.randomInt(100000));
 	nseed = noiseSeed(hl.randomInt(100000));
