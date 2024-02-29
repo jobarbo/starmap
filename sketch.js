@@ -273,7 +273,7 @@ let borderX;
 let borderY;
 let particleNum = 20000;
 
-let isColored = true;
+let isColored = false;
 //let isColored = hl.randomElement([true, false]);
 
 let cycle = parseInt((maxFrames * particleNum) / 1170);
@@ -391,9 +391,22 @@ function INIT() {
 		movers.push(new Mover(x, y, initHue, scl1 / MULTIPLIER, scl2 / MULTIPLIER, ang1 * MULTIPLIER, ang2 * MULTIPLIER, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features));
 	}
 
-	bgCol = color(random(0, 360), random([0, 2, 5]), features.theme == "bright" ? 93 : 5, 100);
+	// make a gradient background from top to bottom in vanilla JS
+	drawingContext.globalCompositeOperation = "source-over";
+	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
+	gradient.addColorStop(0, "hsl(0, 0%, 2%)");
+	gradient.addColorStop(1, "hsl(320, 50%, 6%)");
+	drawingContext.fillStyle = gradient;
+	drawingContext.fillRect(0, 0, width, height);
 
-	background(bgCol);
+	//make a circular gradient in the center of the canvas
+	drawingContext.globalCompositeOperation = "source-over";
+	let radialGradient = drawingContext.createRadialGradient(centerX, centerY, 0, centerX, centerY, width / 2);
+	radialGradient.addColorStop(0.2, "hsl(220, 50%, 3%)");
+	radialGradient.addColorStop(1, "hsl(260, 50%, 4%)");
+	drawingContext.fillStyle = radialGradient;
+	drawingContext.fillRect(0, 0, width, height);
+
 	//background(45, 100, 100);
 	//background(221, 100, 60);
 }
