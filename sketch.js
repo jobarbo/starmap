@@ -273,6 +273,9 @@ let borderX;
 let borderY;
 let particleNum = 20000;
 
+let isColored = hl.randomElement([true, false]);
+console.log("isColored: ", isColored);
+
 let cycle = parseInt((maxFrames * particleNum) / 1170);
 
 ({sin, cos, imul, PI} = Math);
@@ -559,8 +562,11 @@ class Mover {
 		let totalDistance = dist(origin_x, origin_y, this.x, this.y);
 
 		this.sat += map(totalSpeed, 0, 400, -this.satDir, this.satDir, true);
-		this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 0) : this.sat;
-		this.sat = 0;
+		if (isColored) {
+			this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 0) : this.sat;
+		} else {
+			this.sat = 0;
+		}
 		this.hue += map(totalSpeed, 0, 1200, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
 		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true);
