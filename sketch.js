@@ -296,7 +296,7 @@ function setup() {
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
-	c = createCanvas(windowWidth, windowHeight * RATIO);
+	c = createCanvas(windowHeight, windowHeight * RATIO);
 	rectMode(CENTER);
 	rseed = randomSeed(hl.randomInt(100000));
 	nseed = noiseSeed(hl.randomInt(100000));
@@ -395,20 +395,12 @@ function INIT() {
 	// make a gradient background from top to bottom in vanilla JS
 	drawingContext.globalCompositeOperation = "source-over";
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
-	gradient.addColorStop(0, "hsl(240, 100%, 2%)");
-	gradient.addColorStop(0.7, "hsl(270, 100%, 5%)");
-	gradient.addColorStop(1, "hsl(260, 30%, 14%)");
+	gradient.addColorStop(0, "hsl(240, 100%, 3%)");
+	gradient.addColorStop(0.2, "hsl(250, 100%, 4%)");
+	gradient.addColorStop(0.8, "hsl(270, 100%, 6%)");
+	gradient.addColorStop(1, "hsl(280, 100%, 8%)");
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
-
-	//make a circular gradient in the center of the canvas
-	/* 	drawingContext.globalCompositeOperation = "source-over";
-	let radialGradient = drawingContext.createRadialGradient(centerX, centerY, 0, centerX, centerY, width / 2);
-	radialGradient.addColorStop(0.2, "hsl(250, 50%, 5%)");
-	radialGradient.addColorStop(0.6, "hsl(260, 50%, 7%)");
-	radialGradient.addColorStop(1, "hsl(270, 50%, 8%)");
-	drawingContext.fillStyle = radialGradient;
-	drawingContext.fillRect(0, 0, width, height); */
 
 	//background(45, 100, 100);
 	//background(221, 100, 60);
@@ -417,7 +409,7 @@ function INIT() {
 function generateStars() {
 	//generate stars
 	let stars = [];
-	let starNum = 500;
+	let starNum = 300;
 	for (let i = 0; i < starNum; i++) {
 		let x = random(0, width);
 		let y = random(0, height);
@@ -479,6 +471,7 @@ class Stars {
 		this.initY = y;
 		this.x = x;
 		this.y = y;
+		this.s = 0.13 * MULTIPLIER;
 		this.hue = hue;
 		this.sat = sat;
 		this.bri = bri;
@@ -493,7 +486,7 @@ class Stars {
 	show() {
 		fill(this.hue, this.sat, this.bri);
 		noStroke();
-		rect(this.x, this.y, 0.13);
+		rect(this.x, this.y, this.s);
 	}
 
 	move(xi, yi) {
@@ -664,7 +657,7 @@ class Mover {
 		}
 		this.hue += map(totalSpeed, 0, 1200, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true);
+		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true) * MULTIPLIER;
 		//! variable stroke weight
 		//this.s = map(totalDistance, 0, 20, 0.2, 0, true);
 
