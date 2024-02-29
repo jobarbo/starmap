@@ -466,7 +466,7 @@ class Mover {
 		this.lineWeightMax = 2;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
-		this.nlimit = 4.5;
+		this.nlimit = 1.5;
 
 		//! jouer avec le negatif et le positif
 		this.nvalueDir = [-1, -1, -1, -1];
