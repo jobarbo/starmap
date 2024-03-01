@@ -125,7 +125,7 @@ function weighted_choice(data) {
 	for (let i = 0; i < data.length; ++i) {
 		total += data[i][1];
 	}
-	const threshold = rand() * total;
+	const threshold = hl.random() * total;
 	total = 0;
 	for (let i = 0; i < data.length - 1; ++i) {
 		total += data[i][1];
@@ -273,20 +273,66 @@ let borderX;
 let borderY;
 let particleNum = 20000;
 
-let isColored = true;
-//let isColored = hl.randomElement([true, false]);
-
 let cycle = parseInt((maxFrames * particleNum) / 1170);
 
 ({sin, cos, imul, PI} = Math);
 TAU = PI * 2;
 F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
+//! Traits setup
+let isColored = true;
+//let isColored = hl.randomElement([true, false]);
+
+const complexityArr = [
+	["1", 70],
+	["2", 20],
+	["3", 5],
+	["4", 2],
+	["5", 2],
+	["6", 1],
+];
+
+const configArr = [
+	["1", 70],
+	["2", 20],
+	["3", 10],
+];
+
+function generate_composition_params(complexity, configuration) {
+	// SET DEFAULTS IF NOT PASSED IN
+	if (complexity === undefined) {
+		complexity = weighted_choice(complexityArr);
+	}
+
+	if (configuration === undefined) {
+		configuration = weighted_choice(configArr);
+	}
+
+	//* PACK PARAMETERS INTO OBJECT *//
+	var composition_params = {
+		complexity: complexity,
+		configuration: configuration,
+	};
+
+	//* RETURN PARAMETERS *//
+	return composition_params;
+}
+
+let composition_params = generate_composition_params();
+
+var {complexity, configuration} = composition_params;
+
+hl.token.setTraits({
+	Complexity: complexity,
+	Colored: isColored,
+	Configuration: configuration,
+});
+
 function setup() {
 	console.log("hash:", hl.tx.hash);
 	console.log("token id:", hl.tx.tokenId);
-	features = "";
-
+	features = hl.token.getTraits();
+	console.log(features);
 	pixelDensity(dpi(3));
 
 	elapsedTime = 0;
@@ -534,7 +580,7 @@ class Mover {
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
-		this.oct = 1;
+		this.oct = features.Complexity;
 		this.centerX = width / 2;
 		this.centerY = height / 2;
 		this.zombie = false;
@@ -610,15 +656,15 @@ class Mover {
 		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
-			if (config_type === 1) {
+			if (features.Configuration === "1") {
 				//! STARMAP CONFIGURATION
 				this.uvalue[i] *= 1.013 * this.uvalueDir[i];
 				this.nvalue[i] += 0.01 * this.nvalueDir[i];
-			} else if (config_type === 2) {
+			} else if (features.Configuration === "2") {
 				//! Equilibrium CONFIGURATION
 				this.uvalue[i] *= 1.015 * this.uvalueDir[i];
 				this.nvalue[i] += 0.015 * this.nvalueDir[i];
-			} else if (config_type === 3) {
+			} else if (features.Configuration === "3") {
 				//! ORIGINAL CONFIGURATION
 				//this.uvalue[i] *= 1.011 * this.uvalueDir[i];
 				this.uvalue[i] += 0.5 * this.uvalueDir[i];
