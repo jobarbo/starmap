@@ -625,8 +625,8 @@ class Mover {
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
 		//* This seems to be the most interesting configuration
-		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER;
+		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]);
 
 		//! this one is also interesting although can yield chaotic results
 		/* 		this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
@@ -658,8 +658,8 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
 		//! standard interpolation
-		this.lineWeightMax = map(frameCount, 150, maxFrames, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, maxFrames, 10, 0.1, true);
+		this.lineWeightMax = map(frameCount, 150, maxFrames - 50, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, maxFrames - 50, 10, 0.1, true);
 
 		//!inverted interpolation
 		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
