@@ -612,7 +612,7 @@ class Mover {
 		this.centerX = width / 2;
 		this.centerY = height / 2;
 		this.zombie = false;
-		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
+		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]); //!try randomizing this
 		this.lineWeightMax = 2;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
@@ -625,8 +625,8 @@ class Mover {
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
 		//* This seems to be the most interesting configuration
-		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]);
+		/* 		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]); */
 
 		//! this one is also interesting although can yield chaotic results
 		/* 		this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
@@ -658,8 +658,8 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
 		//! standard interpolation
-		this.lineWeightMax = map(frameCount, 150, maxFrames - 50, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, maxFrames - 50, 10, 0.1, true);
+		/* 		this.lineWeightMax = map(frameCount, 150, maxFrames - 50, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, maxFrames - 50, 10, 0.1, true); */
 
 		//!inverted interpolation
 		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
@@ -673,8 +673,8 @@ class Mover {
 		/* this.lineWeightMax = map(frameCount, 150, 400, 20, 1, true);
 		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
 
-		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		/* this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
 
 		//! interesting texture (to try)
 		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
@@ -695,7 +695,7 @@ class Mover {
 				this.uvalue[i] += 0.5 * this.uvalueDir[i];
 				this.nvalue[i] += 0.005 * this.nvalueDir[i];
 			}
-			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
+			/* 			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
 				this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
 				this.nvalueDir[i] *= -1;
 				//this.lineWeight += 0.1 * MULTIPLIER;
@@ -704,11 +704,11 @@ class Mover {
 			if (this.uvalue[i] <= this.ulow || this.uvalue[i] >= this.uhigh) {
 				this.uvalue[i] = this.uvalue[i] > this.uhigh ? this.ulow : this.uvalue[i] < this.ulow ? this.uhigh : this.uvalue[i];
 				//this.uvalueDir[i] *= -1;
-			}
+			} */
 		}
 
-		let origin_x = this.x + (p.x * MULTIPLIER) / this.xRandDivider;
-		let origin_y = this.y + (p.y * MULTIPLIER) / this.xRandDivider;
+		/* 		let origin_x = this.x + (p.x * MULTIPLIER) / this.xRandDivider;
+		let origin_y = this.y + (p.y * MULTIPLIER) / this.xRandDivider; */
 
 		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal * MULTIPLIER);
 		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal * MULTIPLIER);
@@ -717,10 +717,10 @@ class Mover {
 		this.y += (p.y * MULTIPLIER) / this.yRandDivider + skipper.y;
 		let velocity = createVector((p.x * MULTIPLIER) / this.xRandDivider + skipper.x, (p.y * MULTIPLIER) / this.yRandDivider + skipper.y);
 
-		let totalSpeed = abs(velocity.mag());
-		let totalDistance = dist(origin_x, origin_y, this.x, this.y);
+		/* 		let totalSpeed = abs(velocity.mag());
+		let totalDistance = dist(origin_x, origin_y, this.x, this.y); */
 
-		this.sat += map(totalSpeed, 0, 400, -this.satDir, this.satDir, true);
+		/* 		this.sat += map(totalSpeed, 0, 400, -this.satDir, this.satDir, true);
 		if (isColored) {
 			this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 0) : this.sat;
 		} else {
@@ -728,7 +728,7 @@ class Mover {
 		}
 		this.hue += map(totalSpeed, 0, 1200, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true) * MULTIPLIER;
+		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true) * MULTIPLIER; */
 		//! variable stroke weight
 		//this.s = map(totalDistance, 0, 20, 0.2, 0, true);
 
