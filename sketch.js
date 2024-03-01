@@ -469,10 +469,10 @@ function INIT() {
 	// make a gradient background from top to bottom in vanilla JS
 	drawingContext.globalCompositeOperation = "source-over";
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
-	gradient.addColorStop(0, "hsl(240, 100%, 3%)");
-	gradient.addColorStop(0.2, "hsl(250, 100%, 4%)");
-	gradient.addColorStop(0.8, "hsl(270, 100%, 8%)");
-	gradient.addColorStop(1, "hsl(270, 70%, 12%)");
+	gradient.addColorStop(0, "hsl(270, 100%, 3%)");
+	gradient.addColorStop(0.2, "hsl(260, 100%, 4%)");
+	gradient.addColorStop(0.8, "hsl(250, 100%, 6%)");
+	gradient.addColorStop(1, "hsl(240, 70%, 8%)");
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
 
@@ -483,7 +483,7 @@ function INIT() {
 function generateStars() {
 	//generate stars
 	let stars = [];
-	let starNum = 1000;
+	let starNum = 300;
 	for (let i = 0; i < starNum; i++) {
 		let x = random(0, width);
 		let y = random(0, height);
@@ -558,7 +558,7 @@ class Stars {
 	}
 
 	show() {
-		fill(this.hue, this.sat, this.bri);
+		fill(this.hue, this.sat, this.bri, random([10, 50, 70, 100]));
 		noStroke();
 		rect(this.x, this.y, this.s);
 	}
@@ -625,8 +625,8 @@ class Mover {
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
 		//* This seems to be the most interesting configuration
-		/* 		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER; */
+		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER;
 
 		//! this one is also interesting although can yield chaotic results
 		/* 		this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
@@ -658,8 +658,8 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
 		//! standard interpolation
-		/* 		this.lineWeightMax = map(frameCount, 150, 450, 10, 1, true);
-		this.skipperMax = map(frameCount, 150, 450, 10, 0.1, true); */
+		this.lineWeightMax = map(frameCount, 150, maxFrames, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, maxFrames, 10, 0.1, true);
 
 		//!inverted interpolation
 		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
@@ -673,8 +673,8 @@ class Mover {
 		/* this.lineWeightMax = map(frameCount, 150, 400, 20, 1, true);
 		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
 
-		/* this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
+		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
 
 		//! interesting texture (to try)
 		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
