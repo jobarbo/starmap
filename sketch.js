@@ -238,10 +238,7 @@ function generateConsoleLogs(params) {
 // url search params
 const sp = new URLSearchParams(window.location.search);
 
-let config_type = parseInt(hl.randomInt(1, 3));
-console.log("config_type: ", config_type);
 console.log("seed: ", seed);
-//config_type = 2;
 
 let features = "";
 let movers = [];
@@ -280,15 +277,15 @@ TAU = PI * 2;
 F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 //! Traits setup
-let isColored = true;
+let isColored = hl.randomBool(0.75);
 //let isColored = hl.randomElement([true, false]);
 
 const complexityArr = [
-	["1", 70],
-	["2", 20],
-	["3", 5],
-	["4", 2],
-	["5", 2],
+	["1", 80],
+	["2", 16],
+	["3", 1],
+	["4", 1],
+	["5", 1],
 	["6", 1],
 ];
 
@@ -298,7 +295,17 @@ const configArr = [
 	["3", 10],
 ];
 
-function generate_composition_params(complexity, configuration) {
+const scaleConfigArr = [
+	["locked", 70],
+	["unlocked", 30],
+];
+
+const dividerConfigArr = [
+	["locked", 30],
+	["unlocked", 70],
+];
+
+function generate_composition_params(complexity, configuration, scaleLock, dividerLock) {
 	// SET DEFAULTS IF NOT PASSED IN
 	if (complexity === undefined) {
 		complexity = weighted_choice(complexityArr);
@@ -308,10 +315,20 @@ function generate_composition_params(complexity, configuration) {
 		configuration = weighted_choice(configArr);
 	}
 
+	if (scaleLock === undefined) {
+		scaleLock = weighted_choice(scaleConfigArr);
+	}
+
+	if (dividerLock === undefined) {
+		dividerLock = weighted_choice(dividerConfigArr);
+	}
+
 	//* PACK PARAMETERS INTO OBJECT *//
 	var composition_params = {
 		complexity: complexity,
 		configuration: configuration,
+		scaleLock: scaleLock,
+		dividerLock: dividerLock,
 	};
 
 	//* RETURN PARAMETERS *//
@@ -320,12 +337,14 @@ function generate_composition_params(complexity, configuration) {
 
 let composition_params = generate_composition_params();
 
-var {complexity, configuration} = composition_params;
+var {complexity, configuration, scaleLock, dividerLock} = composition_params;
 
 hl.token.setTraits({
 	Complexity: complexity,
 	Colored: isColored,
 	Configuration: configuration,
+	"Scale Lock": scaleLock,
+	"Divider Lock": dividerLock,
 });
 
 function setup() {
@@ -338,11 +357,11 @@ function setup() {
 	elapsedTime = 0;
 	framesRendered = 0;
 	drawing = true;
-	generateConsoleLogs({seed, noiseCanvasWidth, noiseCanvasHeight, features, config_type});
+	generateConsoleLogs({seed, noiseCanvasWidth, noiseCanvasHeight, features});
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
-	c = createCanvas(windowWidth, windowHeight * RATIO);
+	c = createCanvas(C_WIDTH, C_WIDTH * RATIO);
 	rectMode(CENTER);
 	rseed = randomSeed(hl.randomInt(100000));
 	nseed = noiseSeed(hl.randomInt(100000));
@@ -414,15 +433,24 @@ function* drawGenerator() {
 }
 
 function INIT() {
-	scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
-	scl2 = scl1;
-	//scl2 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);;
+	if (features["Scale Lock"] === "locked") {
+		scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
+		scl2 = scl1;
+	} else {
+		scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
+		scl2 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
+	}
 
 	ang1 = 1;
 	ang2 = 1;
 
-	xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
-	yRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+	if (features["Divider Lock"] === "locked") {
+		xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+		yRandDivider = xRandDivider;
+	} else {
+		xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+		yRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+	}
 
 	xMin = -0.01;
 	xMax = 1.01;
@@ -443,8 +471,8 @@ function INIT() {
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
 	gradient.addColorStop(0, "hsl(240, 100%, 3%)");
 	gradient.addColorStop(0.2, "hsl(250, 100%, 4%)");
-	gradient.addColorStop(0.8, "hsl(270, 100%, 6%)");
-	gradient.addColorStop(1, "hsl(280, 100%, 8%)");
+	gradient.addColorStop(0.8, "hsl(270, 100%, 8%)");
+	gradient.addColorStop(1, "hsl(270, 70%, 12%)");
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
 
@@ -455,7 +483,7 @@ function INIT() {
 function generateStars() {
 	//generate stars
 	let stars = [];
-	let starNum = 300;
+	let starNum = 1000;
 	for (let i = 0; i < starNum; i++) {
 		let x = random(0, width);
 		let y = random(0, height);
@@ -464,11 +492,11 @@ function generateStars() {
 		let bri = 100;
 		stars.push(new Stars(x, y, hue, sat, bri, xMin, xMax, yMin, yMax));
 	}
-	blendMode(SCREEN);
+	blendMode(BLEND);
 	for (let i = 0; i < starNum; i++) {
 		for (let j = 0; j < 1000; j++) {
-			let xi = 0.9;
-			let yi = 0.15;
+			let xi = 0.2;
+			let yi = 0.8;
 			stars[i].show();
 			stars[i].move(xi, yi);
 		}
@@ -476,8 +504,8 @@ function generateStars() {
 
 	for (let i = 0; i < starNum; i++) {
 		for (let j = 0; j < 1000; j++) {
-			let xi = 0.15;
-			let yi = 0.9;
+			let xi = 0.8;
+			let yi = 0.2;
 			stars[i].show();
 			stars[i].move(xi, yi);
 		}
@@ -517,7 +545,7 @@ class Stars {
 		this.initY = y;
 		this.x = x;
 		this.y = y;
-		this.s = 0.13 * MULTIPLIER;
+		this.s = 0.12 * MULTIPLIER;
 		this.hue = hue;
 		this.sat = sat;
 		this.bri = bri;
@@ -525,7 +553,7 @@ class Stars {
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
-		this.xRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5])]);
+		this.xRandSkipperVal = random([0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 1, 1.5, 2, 2.5, 3]);
 		this.yRandSkipperVal = this.xRandSkipperVal;
 	}
 
@@ -585,9 +613,6 @@ class Mover {
 		this.centerY = height / 2;
 		this.zombie = false;
 		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
-		//this.lineWeight = random([0.01, 1, 5, 10, 10]) * MULTIPLIER;
-		//this.lineWeight = 10 * MULTIPLIER;
-		//this.lineWeightMax = random([0.01, 0.1, 1, 5, 10, 20]);
 		this.lineWeightMax = 2;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
@@ -600,11 +625,11 @@ class Mover {
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
 		//* This seems to be the most interesting configuration
-		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER;
+		/* 		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]) * MULTIPLIER; */
 
 		//! this one is also interesting although can yield chaotic results
-		/* 		this.ulow = random([0.01, 0.1, 1, 5, 10, 25, 50, 75, 100]) * MULTIPLIER;
+		/* 		this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
 		this.uhigh = 150 * MULTIPLIER; */
 
 		//! this one is the standard one randomized
@@ -633,23 +658,23 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
 
 		//! standard interpolation
-		this.lineWeightMax = map(frameCount, 150, 500, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true);
+		/* 		this.lineWeightMax = map(frameCount, 150, 450, 10, 1, true);
+		this.skipperMax = map(frameCount, 150, 450, 10, 0.1, true); */
 
 		//!inverted interpolation
-		/* this.lineWeightMax = map(frameCount, 150, 500, 1, 20, true);
-		this.skipperMax = map(frameCount, 150, 500, 0.1, 10, true); */
+		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
+		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
 
 		//!Mirror interpolation creates more "starrs"
-		/* 		this.lineWeightMax = map(frameCount, 150, 500, 1, 20, true);
-		this.skipperMax = map(frameCount, 150, 500, 10, 0.1, true); */
+		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
+		this.skipperMax = map(frameCount, 150, 400, 10, 0.1, true); */
 
 		//!Mirror interpolation config 2
-		/* this.lineWeightMax = map(frameCount, 150, 500, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, 500, 0.1, 10, true); */
+		/* this.lineWeightMax = map(frameCount, 150, 400, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
 
-		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		/* this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
 
 		//! interesting texture (to try)
 		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
