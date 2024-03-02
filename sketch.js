@@ -1,6 +1,6 @@
 let seed = parseInt(Math.floor(hl.random() * 10000000));
-let noiseCanvasWidth = 1;
-let noiseCanvasHeight = 1;
+let noiseCanvasWidth = 0;
+let noiseCanvasHeight = 0;
 
 let clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
 let smoothstep = (a, b, x) => (((x -= a), (x /= b - a)) < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x));
@@ -76,16 +76,7 @@ nc = na.map(cos); // sin and cos of those angles
 nox = F(99, (_) => R(1024)); // random noise x offset
 noy = F(99, (_) => R(1024)); // random noise y offset
 
-n2 = (
-	x,
-	y,
-	s,
-	i,
-	c = nc[i] * s,
-	n = ns[i] * s,
-	xi = floor((([x, y] = [(x - noiseCanvasWidth / 2) * c + (y - noiseCanvasHeight * 2) * n + nox[i], (y - noiseCanvasHeight * 2) * c - (x - noiseCanvasWidth / 2) * n + noy[i]]), x)),
-	yi = floor(y) // (x,y) = coordinate, s = scale, i = noise offset index
-) => (
+n2 = (x, y, s, i, c = nc[i] * s, n = ns[i] * s, xi = floor((([x, y] = [x * c + y * n + nox[i], y * c - x * n + noy[i]]), x)), yi = floor(y)) => (
 	(x -= xi),
 	(y -= yi),
 	(x *= x * (3 - 2 * x)),
@@ -244,8 +235,8 @@ let features = "";
 let movers = [];
 let scl1;
 let scl2;
-let ang1;
-let ang2;
+let amp1;
+let amp2;
 let rseed;
 let nseed;
 let xMin;
@@ -277,7 +268,7 @@ TAU = PI * 2;
 F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 //! Traits setup
-let isColored = hl.randomBool(0.75);
+let isColored = hl.randomBool(0.99);
 //let isColored = hl.randomElement([true, false]);
 
 const complexityArr = [
@@ -357,7 +348,7 @@ function setup() {
 	elapsedTime = 0;
 	framesRendered = 0;
 	drawing = true;
-	generateConsoleLogs({seed, noiseCanvasWidth, noiseCanvasHeight, features});
+	generateConsoleLogs({seed, features});
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
@@ -441,8 +432,8 @@ function INIT() {
 		scl2 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
 	}
 
-	ang1 = 1;
-	ang2 = 1;
+	amp1 = 1;
+	amp2 = 1;
 
 	if (features["Divider Lock"] === "locked") {
 		xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
@@ -463,7 +454,7 @@ function INIT() {
 		let y = random(yMin, yMax) * height;
 		let initHue = hue + random(-1, 1);
 		initHue = initHue > 360 ? initHue - 360 : initHue < 0 ? initHue + 360 : initHue;
-		movers.push(new Mover(x, y, initHue, scl1 / MULTIPLIER, scl2 / MULTIPLIER, ang1 * MULTIPLIER, ang2 * MULTIPLIER, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features));
+		movers.push(new Mover(x, y, initHue, scl1 / MULTIPLIER, scl2 / MULTIPLIER, amp1 * MULTIPLIER, amp2 * MULTIPLIER, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features));
 	}
 
 	// make a gradient background from top to bottom in vanilla JS
@@ -545,7 +536,7 @@ class Stars {
 		this.initY = y;
 		this.x = x;
 		this.y = y;
-		this.s = 0.12 * MULTIPLIER;
+		this.s = 0.16 * MULTIPLIER;
 		this.hue = hue;
 		this.sat = sat;
 		this.bri = bri;
@@ -553,7 +544,7 @@ class Stars {
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
-		this.xRandSkipperVal = random([0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 1, 1.5, 2, 2.5, 3]);
+		this.xRandSkipperVal = random([0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 1, 1.5, 2, 2.5, 3, 5]);
 		this.yRandSkipperVal = this.xRandSkipperVal;
 	}
 
@@ -578,7 +569,7 @@ class Stars {
 }
 
 class Mover {
-	constructor(x, y, hue, scl1, scl2, ang1, ang2, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features) {
+	constructor(x, y, hue, scl1, scl2, amp1, amp2, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features) {
 		this.x = x;
 		this.y = y;
 		this.initHue = hue;
@@ -593,8 +584,8 @@ class Mover {
 		this.s = this.initS;
 		this.scl1 = scl1;
 		this.scl2 = scl2;
-		this.ang1 = ang1;
-		this.ang2 = ang2;
+		this.amp1 = amp1;
+		this.amp2 = amp2;
 		this.xRandDivider = xRandDivider;
 		this.yRandDivider = yRandDivider;
 		this.xRandSkipper = 0;
@@ -655,7 +646,7 @@ class Mover {
 	}
 
 	move(frameCount) {
-		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.ang1, this.ang2, this.oct, this.nvalue, this.uvalue);
+		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.amp1, this.amp2, this.oct, this.nvalue, this.uvalue);
 
 		//! standard interpolation
 		this.lineWeightMax = map(frameCount, 150, maxFrames - 50, 20, 1, true);
@@ -712,50 +703,50 @@ class Mover {
 
 		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal * MULTIPLIER);
 		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal * MULTIPLIER);
-		let skipper = createVector(this.xRandSkipper, this.yRandSkipper);
-		this.x += (p.x * MULTIPLIER) / this.xRandDivider + skipper.x;
-		this.y += (p.y * MULTIPLIER) / this.yRandDivider + skipper.y;
-		let velocity = createVector((p.x * MULTIPLIER) / this.xRandDivider + skipper.x, (p.y * MULTIPLIER) / this.yRandDivider + skipper.y);
+		this.x += (p.x * MULTIPLIER) / this.xRandDivider + this.xRandSkipper;
+		this.y += (p.y * MULTIPLIER) / this.yRandDivider + this.yRandSkipper;
+		let velocity = createVector((p.x * MULTIPLIER) / this.xRandDivider + this.xRandSkipper, (p.y * MULTIPLIER) / this.yRandDivider + this.yRandSkipper);
 
 		let totalSpeed = abs(velocity.mag());
 		let totalDistance = dist(origin_x, origin_y, this.x, this.y);
 
-		this.sat += map(totalSpeed, 0, 400, -this.satDir, this.satDir, true);
+		this.sat += map(totalSpeed, 0, 400 * MULTIPLIER, -this.satDir, this.satDir, true);
 		if (isColored) {
 			this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 0) : this.sat;
 		} else {
 			this.sat = 0;
 		}
-		this.hue += map(totalSpeed, 0, 1200, -this.hueStep, this.hueStep, true);
+		this.hue += map(totalSpeed, 0, 1200 * MULTIPLIER, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
-		this.lineWeight = map(totalSpeed, 0, 600, 0, this.lineWeightMax, true) * MULTIPLIER;
+		this.lineWeight = map(totalSpeed, 0, 600 * MULTIPLIER, 0, this.lineWeightMax, true) * MULTIPLIER;
 		//! variable stroke weight
 		//this.s = map(totalDistance, 0, 20, 0.2, 0, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
-			this.x = this.xMax * width + random() * this.lineWeight;
-			this.y = this.y + random() * this.lineWeight;
+			this.x = this.xMax * width + hl.random(this.lineWeight);
+			this.y = this.y + hl.random(this.lineWeight);
 		}
 		if (this.x > this.xMax * width + this.lineWeight) {
-			this.x = this.xMin * width - random() * this.lineWeight;
-			this.y = this.y + random() * this.lineWeight;
+			this.x = this.xMin * width - hl.random(this.lineWeight);
+			this.y = this.y + hl.random(this.lineWeight);
 		}
 		if (this.y < this.yMin * height - this.lineWeight) {
-			this.y = this.yMax * height + random() * this.lineWeight;
-			this.x = this.x + random() * this.lineWeight;
+			this.y = this.yMax * height + hl.random(this.lineWeight);
+			this.x = this.x + hl.random(this.lineWeight);
 		}
 		if (this.y > this.yMax * height + this.lineWeight) {
-			this.y = this.yMin * height - random() * this.lineWeight;
-			this.x = this.x + random() * this.lineWeight;
+			this.y = this.yMin * height - hl.random(this.lineWeight);
+			this.x = this.x + hl.random(this.lineWeight);
 		}
+		//console.log(Math.random() * this.lineWeight);
 	}
 }
 
-function superCurve(x, y, scl1, scl2, ang1, ang2, octave, nvalue, uvalue) {
+function superCurve(x, y, scl1, scl2, amp1, amp2, octave, nvalue, uvalue) {
 	let nx = x,
 		ny = y,
-		a1 = ang1,
-		a2 = ang2,
+		a1 = amp1,
+		a2 = amp2,
 		scale1 = scl1,
 		scale2 = scl2,
 		dx,
