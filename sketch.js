@@ -259,7 +259,7 @@ let centerX;
 let centerY;
 let borderX;
 let borderY;
-let particleNum = 20000;
+let particleNum = 25000;
 
 let cycle = parseInt((maxFrames * particleNum) / 1170);
 
@@ -649,8 +649,8 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.amp1, this.amp2, this.oct, this.nvalue, this.uvalue);
 
 		//! standard interpolation
-		this.lineWeightMax = map(frameCount, 150, maxFrames - 50, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, maxFrames - 50, 10, 0.1, true);
+		this.lineWeightMax = map(frameCount, 150, maxFrames - 100, 20, 1, true);
+		this.skipperMax = map(frameCount, 150, maxFrames - 100, 10, 0.1, true);
 
 		//!inverted interpolation
 		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
@@ -712,7 +712,7 @@ class Mover {
 
 		this.sat += map(totalSpeed, 0, 400 * MULTIPLIER, -this.satDir, this.satDir, true);
 		if (isColored) {
-			this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 0) : this.sat;
+			this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 100) : this.sat;
 		} else {
 			this.sat = 0;
 		}
