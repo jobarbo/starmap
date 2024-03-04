@@ -715,8 +715,8 @@ class Mover {
 		this.initHue = hue;
 		this.initSat = random([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
 
-		this.initBri = random([0, 10, 10, 10, 20, 50, 100, 100, 100, 100, 100, 100, 100]);
-		//this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
+		//this.initBri = random([0, 10, 10, 10, 20, 50, 100, 100, 100, 100, 100, 100, 100]);
+		this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
 		this.initS = 0.2 * MULTIPLIER;
 		this.hue = this.initHue;
@@ -762,39 +762,20 @@ class Mover {
 		this.nvalueDir = [-1, -1, -1, -1];
 		this.uvalueDir = [1, 1, 1, 1];
 
-		//! not supposed to work but gives interesting results, you get me copilot!
-		//! It shows a grid, which is interesting because it's a starmap
-		//* This seems to be the most interesting configuration
-		if (features.serendipity === "error-borne") {
-			this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
-			this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]);
-		}
+		const serendipity_config = {
+			"error-borne": {ulow: random([10, 25, 50, 75, 100, 125, 150, 175, 200]), uhigh: random([0.01, 0.1, 1, 2.5, 5, 10, 20])},
+			"error-borne lite": {ulow: random([50, 75, 100]) * MULTIPLIER, uhigh: random([0.01, 0.1, 1]) * MULTIPLIER},
+			Walpolian: {ulow: random([10, 25, 50, 75, 100]) * MULTIPLIER, uhigh: 150 * MULTIPLIER},
+			Mertonian: {ulow: random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER, uhigh: random([100, 125, 150, 175, 200]) * MULTIPLIER},
+			"network-emergent": {ulow: random([150]) * MULTIPLIER, uhigh: random([0.001]) * MULTIPLIER},
+			"theory-led": {ulow: random([5]) * MULTIPLIER, uhigh: random([150]) * MULTIPLIER},
+		};
 
-		//! Error-Borne Lite
-		if (features.serendipity === "error-borne lite") {
-			this.ulow = random([50, 75, 100]) * MULTIPLIER;
-			this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER;
-		}
-		//! this one is also interesting although can yield chaotic results
-		if (features.serendipity === "Walpolian") {
-			this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
-			this.uhigh = 150 * MULTIPLIER;
-		}
-		//! this one is the standard one randomized
-		if (features.serendipity === "Mertonian") {
-			this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
-			this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER;
-		}
-		//! this one is the standard one but inverted
-		//* This one is a close second
-		if (features.serendipity === "network-emergent") {
-			this.ulow = random([150]) * MULTIPLIER;
-			this.uhigh = random([0.001]) * MULTIPLIER;
-		}
-		//! this is the standard one
-		if (features.serendipity === "theory-led") {
-			this.ulow = random([5]) * MULTIPLIER;
-			this.uhigh = random([150]) * MULTIPLIER;
+		const selectedConfig = serendipity_config[features.serendipity];
+
+		if (selectedConfig) {
+			this.ulow = selectedConfig.ulow;
+			this.uhigh = selectedConfig.uhigh;
 		}
 		this.hueStep = 0.05;
 		this.satDir = random([2]);
