@@ -624,6 +624,9 @@ class Mover {
 		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
 		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]);
 
+		//! Error-Borne Lite
+		/* 		this.ulow = random([50, 75, 100]) * MULTIPLIER;
+		this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER; */
 		//! this one is also interesting although can yield chaotic results
 		/* 		this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
 		this.uhigh = 150 * MULTIPLIER; */
@@ -657,8 +660,8 @@ class Mover {
 		this.apertureHigh = random([1, 2, 5, 10, 25, 50, 75, 100]); */
 
 		//! standard interpolation
-		/* 		this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
-		this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true); */
+		this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
+		this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
 
 		//!inverted interpolation
 		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
