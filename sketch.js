@@ -594,7 +594,7 @@ class Mover {
 		this.yRandSkipperVal = this.xRandSkipperVal;
 		/* 		this.xRandSkipperVal = 0.1;
 		this.yRandSkipperVal = 0.1; */
-		this.skipperMax = 10;
+
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -604,7 +604,12 @@ class Mover {
 		this.centerY = height / 2;
 		this.zombie = false;
 		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
-		this.lineWeightMax = 2;
+		this.lineWeightMax = 20;
+		this.skipperMax = 10;
+		this.shutterHigh = 20;
+		this.shutterLow = 0.1;
+		this.apertureHigh = 10;
+		this.apertureLow = 0.1;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
 		this.nlimit = 1.5;
@@ -647,10 +652,13 @@ class Mover {
 
 	move(frameCount) {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.amp1, this.amp2, this.oct, this.nvalue, this.uvalue);
+		/* 
+		this.shutterHigh = random([1, 5, 8, 10, 12, 15, 20, 35, 50, 75, 100]);
+		this.apertureHigh = random([1, 2, 5, 10, 25, 50, 75, 100]); */
 
 		//! standard interpolation
-		this.lineWeightMax = map(frameCount, 150, maxFrames - 100, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, maxFrames - 100, 10, 0.1, true);
+		/* 		this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
+		this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true); */
 
 		//!inverted interpolation
 		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
@@ -664,8 +672,8 @@ class Mover {
 		/* this.lineWeightMax = map(frameCount, 150, 400, 20, 1, true);
 		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
 
-		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
 
 		//! interesting texture (to try)
 		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
