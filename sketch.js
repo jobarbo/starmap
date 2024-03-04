@@ -325,6 +325,14 @@ const apertureSizeArr = [
 	["very far", 10],
 ];
 
+const reverbArr = [
+	["very slow", 10],
+	["slow", 40],
+	["standard", 30],
+	["fast", 10],
+	["very fast", 10],
+];
+
 function generate_composition_params(
 	complexity,
 	evolution,
@@ -338,7 +346,8 @@ function generate_composition_params(
 	apertureSetting,
 	autofocus,
 	shutterSpeed,
-	apertureSize
+	apertureSize,
+	reverb
 ) {
 	// SET DEFAULTS IF NOT PASSED IN
 	if (complexity === undefined) {
@@ -394,6 +403,10 @@ function generate_composition_params(
 		apertureSize = weighted_choice(apertureSizeArr);
 	}
 
+	if (reverb === undefined) {
+		reverb = weighted_choice(reverbArr);
+	}
+
 	//* PACK PARAMETERS INTO OBJECT *//
 	var composition_params = {
 		complexity: complexity,
@@ -409,6 +422,7 @@ function generate_composition_params(
 		autofocus: autofocus,
 		shutterSpeed: shutterSpeed,
 		apertureSize: apertureSize,
+		reverb: reverb,
 	};
 
 	//* RETURN PARAMETERS *//
@@ -417,7 +431,8 @@ function generate_composition_params(
 
 let composition_params = generate_composition_params();
 
-var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics, apertureSetting, autofocus, shutterSpeed, apertureSize} = composition_params;
+var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics, apertureSetting, autofocus, shutterSpeed, apertureSize, reverb} =
+	composition_params;
 
 hl.token.setTraits({
 	Complexity: complexity,
@@ -434,6 +449,7 @@ hl.token.setTraits({
 	Autofocus: autofocus,
 	"Shutter Speed": shutterSpeed,
 	"Aperture Size": apertureSize,
+	Reverb: reverb,
 });
 
 let features = composition_params;
@@ -740,7 +756,7 @@ class Mover {
 		this.skipperMax = 10;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
-		this.nlimit = 1.5;
+		this.nlimit = features.reverb === "very fast" ? 0.25 : features.reverb === "fast" ? 0.5 : features.reverb === "standard" ? 1 : features.reverb === "slow" ? 1.5 : 2;
 
 		//! jouer avec le negatif et le positif
 		this.nvalueDir = [-1, -1, -1, -1];
