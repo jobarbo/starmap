@@ -327,8 +327,8 @@ const apertureSizeArr = [
 
 const reverbArr = [
 	["very slow", 10],
-	["slow", 40],
-	["standard", 30],
+	["slow", 50],
+	["standard", 20],
 	["fast", 10],
 	["very fast", 10],
 ];
