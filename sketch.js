@@ -293,6 +293,7 @@ const serendiptyArr = [
 const opticsArr = [
 	["standard", 25],
 	["inverted", 25],
+	["starlight", 25],
 	["mirror", 25],
 ];
 
@@ -728,21 +729,23 @@ class Mover {
 		this.shutterHigh = random([1, 5, 8, 10, 12, 15, 20, 35, 50, 75, 100]);
 		this.apertureHigh = random([1, 2, 5, 10, 25, 50, 75, 100]); */
 
-		//! standard interpolation
-		this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
-		this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
-
-		//!inverted interpolation
-		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
-		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
-
-		//!Mirror interpolation creates more "starrs"
-		/* 		this.lineWeightMax = map(frameCount, 150, 400, 1, 20, true);
-		this.skipperMax = map(frameCount, 150, 400, 10, 0.1, true); */
-
-		//!Mirror interpolation config 2
-		/* this.lineWeightMax = map(frameCount, 150, 400, 20, 1, true);
-		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
+		if (features.optics === "standard") {
+			//! standard interpolation
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
+		} else if (features.optics === "inverted") {
+			//!inverted interpolation
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureLow, this.apertureHigh, true);
+		} else if (features.optics === "starlight") {
+			//!Mirror interpolation creates more "starrs"
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
+		} else if (features.optics === "mirror") {
+			//!Mirror interpolation config 2
+			this.lineWeightMax = map(frameCount, maxFrames - 100, 400, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, maxFrames - 100, 400, this.apertureLow, this.apertureHigh, true);
+		}
 
 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
 		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
