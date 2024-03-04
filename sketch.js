@@ -229,9 +229,119 @@ function generateConsoleLogs(params) {
 // url search params
 const sp = new URLSearchParams(window.location.search);
 
-console.log("seed: ", seed);
+({sin, cos, imul, PI} = Math);
+TAU = PI * 2;
+F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
-let features = "";
+//! Traits setup
+let isColored = hl.randomBool(0.75);
+//let isColored = hl.randomElement([true, false]);
+
+const bgTypeArr = [
+	["monochrome", 50],
+	["gradient", 50],
+];
+
+const bgHueArr = [
+	["blue", 20],
+	["purple", 20],
+	["pink", 20],
+];
+
+const complexityArr = [
+	["1", 80],
+	["2", 16],
+	["3", 1],
+	["4", 1],
+	["5", 1],
+	["6", 1],
+];
+
+const evolutionArr = [
+	["starmap", 60],
+	["equilibrium", 20],
+	["original linear", 10],
+	["original exponential", 10],
+];
+
+const scaleConfigArr = [
+	["locked", 70],
+	["unlocked", 30],
+];
+
+const dividerConfigArr = [
+	["locked", 30],
+	["unlocked", 70],
+];
+
+const cosmicOscillationArr = [
+	["none", 20],
+	["sonification", 5],
+	["motion", 5],
+	["full", 70],
+];
+
+function generate_composition_params(complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation) {
+	// SET DEFAULTS IF NOT PASSED IN
+	if (complexity === undefined) {
+		complexity = weighted_choice(complexityArr);
+	}
+
+	if (evolution === undefined) {
+		evolution = weighted_choice(evolutionArr);
+	}
+
+	if (scaleLock === undefined) {
+		scaleLock = weighted_choice(scaleConfigArr);
+	}
+
+	if (dividerLock === undefined) {
+		dividerLock = weighted_choice(dividerConfigArr);
+	}
+
+	if (backgroundType === undefined) {
+		backgroundType = isColored ? weighted_choice(bgTypeArr) : "monochrome";
+	}
+
+	if (backgroundHue === undefined) {
+		backgroundHue = weighted_choice(bgHueArr);
+	}
+
+	if (cosmicOscillation === undefined) {
+		cosmicOscillation = weighted_choice(cosmicOscillationArr);
+	}
+
+	//* PACK PARAMETERS INTO OBJECT *//
+	var composition_params = {
+		complexity: complexity,
+		evolution: evolution,
+		scaleLock: scaleLock,
+		dividerLock: dividerLock,
+		backgroundType: backgroundType,
+		backgroundHue: backgroundHue,
+		cosmicOscillation: cosmicOscillation,
+	};
+
+	//* RETURN PARAMETERS *//
+	return composition_params;
+}
+
+let composition_params = generate_composition_params();
+
+var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation} = composition_params;
+
+hl.token.setTraits({
+	Complexity: complexity,
+	Colored: isColored,
+	Evolution: evolution,
+	"Scale Lock": scaleLock,
+	"Divider Lock": dividerLock,
+	"Background Type": backgroundType,
+	"Background Hue": backgroundHue,
+	"Cosmic Oscillation": cosmicOscillation,
+});
+
+let features = composition_params;
 let movers = [];
 let scl1;
 let scl2;
@@ -261,94 +371,23 @@ let borderX;
 let borderY;
 let particleNum = 25000;
 
+// if bg type is monochrome, set the saturation to 0; else, set it to 100
+let bgSaturation = features.backgroundType === "monochrome" ? 0 : 100;
+
+// if bg hue is set to purple, set the hue to 270; if bg hue is set to blue, set the hue to 220 and so on
+let bgHue = features.backgroundHue === "purple" ? 270 : features.backgroundHue === "blue" ? 240 : 290;
+
 let cycle = parseInt((maxFrames * particleNum) / 1170);
 
-({sin, cos, imul, PI} = Math);
-TAU = PI * 2;
-F = (N, f) => [...Array(N)].map((_, i) => f(i));
-
-//! Traits setup
-let isColored = hl.randomBool(0.99);
-//let isColored = hl.randomElement([true, false]);
-
-const complexityArr = [
-	["1", 80],
-	["2", 16],
-	["3", 1],
-	["4", 1],
-	["5", 1],
-	["6", 1],
-];
-
-const configArr = [
-	["1", 70],
-	["2", 20],
-	["3", 10],
-];
-
-const scaleConfigArr = [
-	["locked", 70],
-	["unlocked", 30],
-];
-
-const dividerConfigArr = [
-	["locked", 30],
-	["unlocked", 70],
-];
-
-function generate_composition_params(complexity, configuration, scaleLock, dividerLock) {
-	// SET DEFAULTS IF NOT PASSED IN
-	if (complexity === undefined) {
-		complexity = weighted_choice(complexityArr);
-	}
-
-	if (configuration === undefined) {
-		configuration = weighted_choice(configArr);
-	}
-
-	if (scaleLock === undefined) {
-		scaleLock = weighted_choice(scaleConfigArr);
-	}
-
-	if (dividerLock === undefined) {
-		dividerLock = weighted_choice(dividerConfigArr);
-	}
-
-	//* PACK PARAMETERS INTO OBJECT *//
-	var composition_params = {
-		complexity: complexity,
-		configuration: configuration,
-		scaleLock: scaleLock,
-		dividerLock: dividerLock,
-	};
-
-	//* RETURN PARAMETERS *//
-	return composition_params;
-}
-
-let composition_params = generate_composition_params();
-
-var {complexity, configuration, scaleLock, dividerLock} = composition_params;
-
-hl.token.setTraits({
-	Complexity: complexity,
-	Colored: isColored,
-	Configuration: configuration,
-	"Scale Lock": scaleLock,
-	"Divider Lock": dividerLock,
-});
-
 function setup() {
+	console.log("seed: ", seed);
 	console.log("hash:", hl.tx.hash);
 	console.log("token id:", hl.tx.tokenId);
-	features = hl.token.getTraits();
-	console.log(features);
 	pixelDensity(dpi(3));
-
+	generateConsoleLogs({seed, features});
 	elapsedTime = 0;
 	framesRendered = 0;
 	drawing = true;
-	generateConsoleLogs({seed, features});
 
 	C_WIDTH = min(windowWidth, windowHeight);
 	MULTIPLIER = C_WIDTH / 1200;
@@ -364,8 +403,7 @@ function setup() {
 
 	centerX = width / 2;
 	centerY = height / 2;
-	borderX = features.composition === "compressed" ? width / 3.5 : features.composition === "constrained" ? width / 3 : features.composition === "semiconstrained" ? width / 2.35 : width / 1.9;
-	borderY = features.composition === "compressed" ? height / 2.75 : features.composition === "constrained" ? height / 2.5 : features.composition === "semiconstrained" ? height / 2.25 : height / 1.9;
+
 	INIT();
 
 	renderStart = Date.now();
@@ -388,13 +426,11 @@ function* drawGenerator() {
 	while (true) {
 		for (let i = 0; i < movers.length; i++) {
 			const mover = movers[i];
-			if (features.lazymorning) {
-				if (elapsedTime > 1) {
-					mover.show();
-				}
-			} else {
+			if (elapsedTime > 1) {
 				mover.show();
 			}
+
+			mover.show();
 
 			mover.move(frameCount);
 			if (count > draw_every) {
@@ -424,7 +460,7 @@ function* drawGenerator() {
 }
 
 function INIT() {
-	if (features["Scale Lock"] === "locked") {
+	if (features.scaleLock === "locked") {
 		scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
 		scl2 = scl1;
 	} else {
@@ -434,8 +470,7 @@ function INIT() {
 
 	amp1 = 1;
 	amp2 = 1;
-
-	if (features["Divider Lock"] === "locked") {
+	if (features.dividerLock === "locked") {
 		xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
 		yRandDivider = xRandDivider;
 	} else {
@@ -460,13 +495,12 @@ function INIT() {
 	// make a gradient background from top to bottom in vanilla JS
 	drawingContext.globalCompositeOperation = "source-over";
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
-	gradient.addColorStop(0, "hsl(270, 100%, 3%)");
-	gradient.addColorStop(0.2, "hsl(260, 100%, 4%)");
-	gradient.addColorStop(0.8, "hsl(250, 100%, 6%)");
-	gradient.addColorStop(1, "hsl(240, 70%, 8%)");
+	gradient.addColorStop(0, `hsl(${bgHue}, ${bgSaturation}%, 3%)`);
+	gradient.addColorStop(0.2, `hsl(${bgHue - 10}, ${bgSaturation}%, 4%)`);
+	gradient.addColorStop(0.8, `hsl(${bgHue - 20}, ${bgSaturation}%, 6%)`);
+	gradient.addColorStop(1, `hsl(${bgHue - 30}, ${bgSaturation - 30}%, 8%)`);
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
-
 	//background(45, 100, 100);
 	//background(221, 100, 60);
 }
@@ -574,7 +608,8 @@ class Mover {
 		this.y = y;
 		this.initHue = hue;
 		this.initSat = random([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
-		this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
+		// if bg type is monochrome, initBri to 100; else, initBri to 0
+		this.initBri = random([0, 10, 10, 10, 20, 30, 80, 100]);
 		this.initAlpha = 100;
 		this.initS = 0.2 * MULTIPLIER;
 		this.hue = this.initHue;
@@ -599,7 +634,7 @@ class Mover {
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
-		this.oct = features.Complexity;
+		this.oct = features.complexity;
 		this.centerX = width / 2;
 		this.centerY = height / 2;
 		this.zombie = false;
@@ -607,7 +642,7 @@ class Mover {
 		this.lineWeightMax = 20;
 		this.skipperMax = 10;
 		this.shutterHigh = 20;
-		this.shutterLow = 0.1;
+		this.shutterLow = 1;
 		this.apertureHigh = 10;
 		this.apertureLow = 0.1;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
@@ -675,38 +710,40 @@ class Mover {
 		/* this.lineWeightMax = map(frameCount, 150, 400, 20, 1, true);
 		this.skipperMax = map(frameCount, 150, 400, 0.1, 10, true); */
 
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]); */
+		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
+		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
 
 		//! interesting texture (to try)
 		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
 		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]); */
 
 		for (let i = 0; i < this.nvalue.length; i++) {
-			if (features.Configuration === "1") {
-				//! STARMAP CONFIGURATION
+			if (features.evolution === "starmap") {
 				this.uvalue[i] *= 1.013 * this.uvalueDir[i];
 				this.nvalue[i] += 0.01 * this.nvalueDir[i];
-			} else if (features.Configuration === "2") {
-				//! Equilibrium CONFIGURATION
+			} else if (features.evolution === "equilibrium") {
 				this.uvalue[i] *= 1.015 * this.uvalueDir[i];
 				this.nvalue[i] += 0.015 * this.nvalueDir[i];
-			} else if (features.Configuration === "3") {
-				//! ORIGINAL CONFIGURATION
-				//this.uvalue[i] *= 1.011 * this.uvalueDir[i];
+			} else if (features.evolution === "original linear") {
 				this.uvalue[i] += 0.5 * this.uvalueDir[i];
 				this.nvalue[i] += 0.005 * this.nvalueDir[i];
+			} else {
+				this.uvalue[i] *= 1.011 * this.uvalueDir[i];
+				this.nvalue[i] += 0.005 * this.nvalueDir[i];
 			}
+			//if (features.cosmicOscillation === "sonification" || features.cosmicOscillation === "full") {
 			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
 				this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
 				this.nvalueDir[i] *= -1;
 				//this.lineWeight += 0.1 * MULTIPLIER;
 			}
-
+			//}
+			//if (features.cosmicOscillation === "motion" || features.cosmicOscillation === "full") {
 			if (this.uvalue[i] <= this.ulow || this.uvalue[i] >= this.uhigh) {
 				this.uvalue[i] = this.uvalue[i] > this.uhigh ? this.ulow : this.uvalue[i] < this.ulow ? this.uhigh : this.uvalue[i];
 				//this.uvalueDir[i] *= -1;
 			}
+			//}
 		}
 
 		let origin_x = this.x + (p.x * MULTIPLIER) / this.xRandDivider;
@@ -749,7 +786,6 @@ class Mover {
 			this.y = this.yMin * height - hl.random(this.lineWeight);
 			this.x = this.x + hl.random(this.lineWeight);
 		}
-		//console.log(Math.random() * this.lineWeight);
 	}
 }
 
