@@ -243,14 +243,14 @@ const bgTypeArr = [
 ];
 
 const bgHueArr = [
-	["blue", 20],
-	["purple", 20],
-	["pink", 20],
+	["blue", 33],
+	["purple", 33],
+	["pink", 33],
 ];
 
 const complexityArr = [
-	["1", 80],
-	["2", 16],
+	["1", 90],
+	["2", 6],
 	["3", 1],
 	["4", 1],
 	["5", 1],
@@ -258,8 +258,8 @@ const complexityArr = [
 ];
 
 const evolutionArr = [
-	["starmap", 60],
-	["equilibrium", 20],
+	["starmap", 40],
+	["equilibrium", 40],
 	["original linear", 10],
 	["original exponential", 10],
 ];
@@ -282,22 +282,64 @@ const cosmicOscillationArr = [
 ];
 
 const serendiptyArr = [
-	["error-borne", 16],
-	["error-borne lite", 16],
-	["Walpolian", 16],
-	["Mertonian", 16],
-	["network-emergent", 16],
-	["theory-led", 16],
+	["error-borne", 50],
+	["error-borne lite", 10],
+	["Walpolian", 10],
+	["Mertonian", 10],
+	["network-emergent", 10],
+	["theory-led", 10],
 ];
 
 const opticsArr = [
-	["standard", 25],
-	["inverted", 25],
-	["starlight", 25],
-	["mirror", 25],
+	["focus-in", 60],
+	["focus-out", 10],
+	["starlight", 20],
+	["mirror", 10],
 ];
 
-function generate_composition_params(complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics) {
+const apertureSettingsArr = [
+	["fixed", 5],
+	["variable fixed", 15],
+	["flowy", 40],
+	["textured", 40],
+];
+
+const autofocusArr = [
+	["autofocus", 50],
+	["manual", 50],
+];
+
+const shutterSpeedArr = [
+	["very fast", 10],
+	["fast", 10],
+	["normal", 60],
+	["slow", 10],
+	["very slow", 10],
+];
+
+const apertureSizeArr = [
+	["very near", 10],
+	["near", 10],
+	["normal", 60],
+	["far", 10],
+	["very far", 10],
+];
+
+function generate_composition_params(
+	complexity,
+	evolution,
+	scaleLock,
+	dividerLock,
+	backgroundType,
+	backgroundHue,
+	cosmicOscillation,
+	serendipity,
+	optics,
+	apertureSetting,
+	autofocus,
+	shutterSpeed,
+	apertureSize
+) {
 	// SET DEFAULTS IF NOT PASSED IN
 	if (complexity === undefined) {
 		complexity = weighted_choice(complexityArr);
@@ -316,7 +358,8 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 	}
 
 	if (backgroundType === undefined) {
-		backgroundType = isColored ? weighted_choice(bgTypeArr) : "monochrome";
+		//backgroundType = isColored ? weighted_choice(bgTypeArr) : "monochrome";
+		backgroundType = weighted_choice(bgTypeArr);
 	}
 
 	if (backgroundHue === undefined) {
@@ -335,6 +378,22 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 		optics = weighted_choice(opticsArr);
 	}
 
+	if (apertureSetting === undefined) {
+		apertureSetting = weighted_choice(apertureSettingsArr);
+	}
+
+	if (autofocus === undefined) {
+		autofocus = weighted_choice(autofocusArr);
+	}
+
+	if (shutterSpeed === undefined) {
+		shutterSpeed = weighted_choice(shutterSpeedArr);
+	}
+
+	if (apertureSize === undefined) {
+		apertureSize = weighted_choice(apertureSizeArr);
+	}
+
 	//* PACK PARAMETERS INTO OBJECT *//
 	var composition_params = {
 		complexity: complexity,
@@ -346,6 +405,10 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 		cosmicOscillation: cosmicOscillation,
 		serendipity: serendipity,
 		optics: optics,
+		apertureSetting: apertureSetting,
+		autofocus: autofocus,
+		shutterSpeed: shutterSpeed,
+		apertureSize: apertureSize,
 	};
 
 	//* RETURN PARAMETERS *//
@@ -354,7 +417,7 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 
 let composition_params = generate_composition_params();
 
-var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics} = composition_params;
+var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics, apertureSetting, autofocus, shutterSpeed, apertureSize} = composition_params;
 
 hl.token.setTraits({
 	Complexity: complexity,
@@ -367,6 +430,10 @@ hl.token.setTraits({
 	"Cosmic Oscillation": cosmicOscillation,
 	Serendipity: serendipity,
 	Optics: optics,
+	"Aperture Setting": apertureSetting,
+	Autofocus: autofocus,
+	"Shutter Speed": shutterSpeed,
+	"Aperture Size": apertureSize,
 });
 
 let features = composition_params;
@@ -631,8 +698,8 @@ class Mover {
 		this.y = y;
 		this.initHue = hue;
 		this.initSat = random([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
-		// if bg type is monochrome, initBri to 100; else, initBri to 0
-		this.initBri = random([0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100]);
+
+		this.initBri = random([0, 10, 10, 10, 20, 50, 100, 100, 100, 100, 100, 100, 100]);
 		//this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
 		this.initS = 0.2 * MULTIPLIER;
@@ -649,11 +716,6 @@ class Mover {
 		this.yRandDivider = yRandDivider;
 		this.xRandSkipper = 0;
 		this.yRandSkipper = 0;
-		this.xRandSkipperVal = random([0.01, 0.1, random([0, 0.01, 0.1, 1, 2, 5, 10, 25, 50, 75, 100])]);
-		this.yRandSkipperVal = this.xRandSkipperVal;
-		/* 		this.xRandSkipperVal = 0.1;
-		this.yRandSkipperVal = 0.1; */
-
 		this.xMin = xMin;
 		this.xMax = xMax;
 		this.yMin = yMin;
@@ -662,13 +724,20 @@ class Mover {
 		this.centerX = width / 2;
 		this.centerY = height / 2;
 		this.zombie = false;
-		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
-		this.lineWeightMax = 20;
-		this.skipperMax = 10;
-		this.shutterHigh = 20;
+		this.shutterHigh = features.shutterSpeed === "very fast" ? 1 : features.shutterSpeed === "fast" ? 10 : features.shutterSpeed === "normal" ? 20 : features.shutterSpeed === "slow" ? 30 : 50;
+		this.apertureHigh = features.apertureSize === "very far" ? 0.1 : features.apertureSize === "far" ? 5 : features.apertureSize === "normal" ? 10 : features.apertureSize === "near" ? 15 : 20;
+		if (features.apertureSetting === "variable fixed") {
+			this.xRandSkipperVal = random([0.01, random([0.1, 1, 2, 5, 7, 10, 12, 15])]);
+			this.yRandSkipperVal = this.xRandSkipperVal;
+		} else if (features.apertureSetting === "fixed") {
+			this.xRandSkipperVal = 0.1;
+			this.yRandSkipperVal = this.xRandSkipperVal;
+		}
 		this.shutterLow = 1;
-		this.apertureHigh = 10;
 		this.apertureLow = 0.1;
+		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
+		this.lineWeightMax = this.shutterHigh;
+		this.skipperMax = 10;
 		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
 		this.nlimit = 1.5;
@@ -725,15 +794,17 @@ class Mover {
 
 	move(frameCount) {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.amp1, this.amp2, this.oct, this.nvalue, this.uvalue);
-		/* 
-		this.shutterHigh = random([1, 5, 8, 10, 12, 15, 20, 35, 50, 75, 100]);
-		this.apertureHigh = random([1, 2, 5, 10, 25, 50, 75, 100]); */
 
-		if (features.optics === "standard") {
+		if (features.autofocus === "autofocus" && features.apertureSetting != "fixed" && features.apertureSetting != "variable fixed") {
+			this.shutterHigh = random([1, 5, 8, 10, 12, 15, 20, 35, 50, 75, 100]);
+			this.apertureHigh = random([1, 2, 5, 10, 25, 50, 75, 100]);
+		}
+
+		if (features.optics === "focus-in") {
 			//! standard interpolation
 			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
 			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
-		} else if (features.optics === "inverted") {
+		} else if (features.optics === "focus-out") {
 			//!inverted interpolation
 			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterLow, this.shutterHigh, true);
 			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureLow, this.apertureHigh, true);
@@ -747,13 +818,15 @@ class Mover {
 			this.skipperMax = map(frameCount, maxFrames - 100, 400, this.apertureLow, this.apertureHigh, true);
 		}
 
-		this.xRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-		this.yRandSkipperVal = random([0.01, 0.1, random(0.00001, this.skipperMax)]);
-
-		//! interesting texture (to try)
-		/* 		this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
-		this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]); */
-
+		if (features.apertureSetting != "fixed" && features.apertureSetting != "variable fixed") {
+			if (features.apertureSetting === "flowy") {
+				this.xRandSkipperVal = random([0.1, random(0.00001, this.skipperMax)]);
+				this.yRandSkipperVal = random([0.1, random(0.00001, this.skipperMax)]);
+			} else if (features.apertureSetting === "textured") {
+				this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
+				this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
+			}
+		}
 		for (let i = 0; i < this.nvalue.length; i++) {
 			if (features.evolution === "starmap") {
 				this.uvalue[i] *= 1.013 * this.uvalueDir[i];
@@ -781,9 +854,6 @@ class Mover {
 			}
 		}
 
-		let origin_x = this.x + (p.x * MULTIPLIER) / this.xRandDivider;
-		let origin_y = this.y + (p.y * MULTIPLIER) / this.xRandDivider;
-
 		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal * MULTIPLIER);
 		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal * MULTIPLIER);
 		this.x += (p.x * MULTIPLIER) / this.xRandDivider + this.xRandSkipper;
@@ -791,7 +861,6 @@ class Mover {
 		let velocity = createVector((p.x * MULTIPLIER) / this.xRandDivider + this.xRandSkipper, (p.y * MULTIPLIER) / this.yRandDivider + this.yRandSkipper);
 
 		let totalSpeed = abs(velocity.mag());
-		let totalDistance = dist(origin_x, origin_y, this.x, this.y);
 
 		this.sat += map(totalSpeed, 0, 400 * MULTIPLIER, -this.satDir, this.satDir, true);
 		if (isColored) {
@@ -802,8 +871,6 @@ class Mover {
 		this.hue += map(totalSpeed, 0, 1200 * MULTIPLIER, -this.hueStep, this.hueStep, true);
 		this.hue = this.hue > 360 ? (this.hue = 0) : this.hue < 0 ? (this.hue = 360) : this.hue;
 		this.lineWeight = map(totalSpeed, 0, 600 * MULTIPLIER, 0, this.lineWeightMax, true) * MULTIPLIER;
-		//! variable stroke weight
-		//this.s = map(totalDistance, 0, 20, 0.2, 0, true);
 
 		if (this.x < this.xMin * width - this.lineWeight) {
 			this.x = this.xMax * width + hl.random(this.lineWeight);
