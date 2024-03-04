@@ -275,13 +275,28 @@ const dividerConfigArr = [
 ];
 
 const cosmicOscillationArr = [
-	["none", 20],
-	["sonification", 5],
-	["motion", 5],
-	["full", 70],
+	["none", 3],
+	["sonification", 1],
+	["motion", 1],
+	["full", 95],
 ];
 
-function generate_composition_params(complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation) {
+const serendiptyArr = [
+	["error-borne", 16],
+	["error-borne lite", 16],
+	["Walpolian", 16],
+	["Mertonian", 16],
+	["network-emergent", 16],
+	["theory-led", 16],
+];
+
+const opticsArr = [
+	["standard", 25],
+	["inverted", 25],
+	["mirror", 25],
+];
+
+function generate_composition_params(complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics) {
 	// SET DEFAULTS IF NOT PASSED IN
 	if (complexity === undefined) {
 		complexity = weighted_choice(complexityArr);
@@ -311,6 +326,14 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 		cosmicOscillation = weighted_choice(cosmicOscillationArr);
 	}
 
+	if (serendipity === undefined) {
+		serendipity = weighted_choice(serendiptyArr);
+	}
+
+	if (optics === undefined) {
+		optics = weighted_choice(opticsArr);
+	}
+
 	//* PACK PARAMETERS INTO OBJECT *//
 	var composition_params = {
 		complexity: complexity,
@@ -320,6 +343,8 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 		backgroundType: backgroundType,
 		backgroundHue: backgroundHue,
 		cosmicOscillation: cosmicOscillation,
+		serendipity: serendipity,
+		optics: optics,
 	};
 
 	//* RETURN PARAMETERS *//
@@ -328,7 +353,7 @@ function generate_composition_params(complexity, evolution, scaleLock, dividerLo
 
 let composition_params = generate_composition_params();
 
-var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation} = composition_params;
+var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics} = composition_params;
 
 hl.token.setTraits({
 	Complexity: complexity,
@@ -339,6 +364,8 @@ hl.token.setTraits({
 	"Background Type": backgroundType,
 	"Background Hue": backgroundHue,
 	"Cosmic Oscillation": cosmicOscillation,
+	Serendipity: serendipity,
+	Optics: optics,
 });
 
 let features = composition_params;
@@ -426,12 +453,7 @@ function* drawGenerator() {
 	while (true) {
 		for (let i = 0; i < movers.length; i++) {
 			const mover = movers[i];
-			if (elapsedTime > 1) {
-				mover.show();
-			}
-
 			mover.show();
-
 			mover.move(frameCount);
 			if (count > draw_every) {
 				count = 0;
@@ -513,7 +535,7 @@ function generateStars() {
 		let x = random(0, width);
 		let y = random(0, height);
 		let hue = random([0, 5, 10, 15, 20, 25, 30, 35, 30, 35, 190, 195, 200, 205, 210, 215, 220, 225]);
-		let sat = random([0, 0, 10, 10, 10, 20, 30, 40, 50]);
+		let sat = isColored ? random([0, 0, 10, 10, 10, 20, 30, 40, 50]) : 0;
 		let bri = 100;
 		stars.push(new Stars(x, y, hue, sat, bri, xMin, xMax, yMin, yMax));
 	}
@@ -609,7 +631,8 @@ class Mover {
 		this.initHue = hue;
 		this.initSat = random([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		// if bg type is monochrome, initBri to 100; else, initBri to 0
-		this.initBri = random([0, 10, 10, 10, 20, 30, 80, 100]);
+		this.initBri = random([0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100]);
+		//this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
 		this.initS = 0.2 * MULTIPLIER;
 		this.hue = this.initHue;
@@ -656,28 +679,37 @@ class Mover {
 		//! not supposed to work but gives interesting results, you get me copilot!
 		//! It shows a grid, which is interesting because it's a starmap
 		//* This seems to be the most interesting configuration
-		this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
-		this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]);
+		if (features.serendipity === "error-borne") {
+			this.ulow = random([10, 25, 50, 75, 100, 125, 150, 175, 200]);
+			this.uhigh = random([0.01, 0.1, 1, 2.5, 5, 10, 20]);
+		}
 
 		//! Error-Borne Lite
-		/* 		this.ulow = random([50, 75, 100]) * MULTIPLIER;
-		this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER; */
+		if (features.serendipity === "error-borne lite") {
+			this.ulow = random([50, 75, 100]) * MULTIPLIER;
+			this.uhigh = random([0.01, 0.1, 1]) * MULTIPLIER;
+		}
 		//! this one is also interesting although can yield chaotic results
-		/* 		this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
-		this.uhigh = 150 * MULTIPLIER; */
-
+		if (features.serendipity === "Walpolian") {
+			this.ulow = random([10, 25, 50, 75, 100]) * MULTIPLIER;
+			this.uhigh = 150 * MULTIPLIER;
+		}
 		//! this one is the standard one randomized
-		/* 		this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
-		this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER; */
-
+		if (features.serendipity === "Mertonian") {
+			this.ulow = random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER;
+			this.uhigh = random([100, 125, 150, 175, 200]) * MULTIPLIER;
+		}
 		//! this one is the standard one but inverted
 		//* This one is a close second
-		/* 		this.ulow = random([150]) * MULTIPLIER;
-		this.uhigh = random([0.001]) * MULTIPLIER; */
-
+		if (features.serendipity === "network-emergent") {
+			this.ulow = random([150]) * MULTIPLIER;
+			this.uhigh = random([0.001]) * MULTIPLIER;
+		}
 		//! this is the standard one
-		/* 		this.ulow = random([5]) * MULTIPLIER;
-		this.uhigh = random([150]) * MULTIPLIER; */
+		if (features.serendipity === "theory-led") {
+			this.ulow = random([5]) * MULTIPLIER;
+			this.uhigh = random([150]) * MULTIPLIER;
+		}
 		this.hueStep = 0.05;
 		this.satDir = random([2]);
 	}
@@ -686,6 +718,8 @@ class Mover {
 		fill(this.hue, this.sat, this.bri, this.a);
 		noStroke();
 		rect(this.x, this.y, this.s);
+		/* 		drawingContext.fillStyle = `hsla(${this.hue}, ${this.sat}%, ${this.bri}%, ${this.a}%)`;
+		drawingContext.fillRect(this.x, this.y, this.s, this.s); */
 	}
 
 	move(frameCount) {
@@ -731,19 +765,17 @@ class Mover {
 				this.uvalue[i] *= 1.011 * this.uvalueDir[i];
 				this.nvalue[i] += 0.005 * this.nvalueDir[i];
 			}
-			//if (features.cosmicOscillation === "sonification" || features.cosmicOscillation === "full") {
-			if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
-				this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
-				this.nvalueDir[i] *= -1;
-				//this.lineWeight += 0.1 * MULTIPLIER;
+			if (features.cosmicOscillation === "sonification" || features.cosmicOscillation === "full") {
+				if (this.nvalue[i] <= -this.nlimit || this.nvalue[i] >= this.nlimit) {
+					this.nvalue[i] = this.nvalue[i] > this.nlimit ? this.nlimit : this.nvalue[i] < -this.nlimit ? -this.nlimit : this.nvalue[i];
+					this.nvalueDir[i] *= -1;
+				}
 			}
-			//}
-			//if (features.cosmicOscillation === "motion" || features.cosmicOscillation === "full") {
-			if (this.uvalue[i] <= this.ulow || this.uvalue[i] >= this.uhigh) {
-				this.uvalue[i] = this.uvalue[i] > this.uhigh ? this.ulow : this.uvalue[i] < this.ulow ? this.uhigh : this.uvalue[i];
-				//this.uvalueDir[i] *= -1;
+			if (features.cosmicOscillation === "motion" || features.cosmicOscillation === "full") {
+				if (this.uvalue[i] <= this.ulow || this.uvalue[i] >= this.uhigh) {
+					this.uvalue[i] = this.uvalue[i] > this.uhigh ? this.ulow : this.uvalue[i] < this.ulow ? this.uhigh : this.uvalue[i];
+				}
 			}
-			//}
 		}
 
 		let origin_x = this.x + (p.x * MULTIPLIER) / this.xRandDivider;
