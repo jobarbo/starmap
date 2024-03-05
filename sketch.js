@@ -477,10 +477,9 @@ var {
 } = composition_params;
 
 hl.token.setTraits({
-	"Is colorized?": isColored,
+	Colorized: isColored,
 	"Color Mode": colorMode,
 	Complexity: complexity,
-	Colored: isColored,
 	Evolution: evolution,
 	"Scale Lock": scaleLock,
 	"Divider Lock": dividerLock,
@@ -497,6 +496,7 @@ hl.token.setTraits({
 });
 
 let features = composition_params;
+let dpi_val = 2;
 let movers = [];
 let scl1;
 let scl2;
@@ -514,6 +514,7 @@ let C_WIDTH;
 let MULTIPLIER;
 let RATIO = 1.3333333333;
 
+let animation;
 let drawing = true;
 let elapsedTime = 0;
 let renderStart = Date.now();
@@ -527,11 +528,18 @@ let bgSaturation = features.backgroundType === "monochrome" ? 0 : 100;
 let bgHue = features.backgroundHue === "purple" ? 270 : features.backgroundHue === "blue" ? 240 : 290;
 
 function setup() {
-	console.log("seed: ", seed);
-	console.log("hash:", hl.tx.hash);
-	console.log("token id:", hl.tx.tokenId);
-	pixelDensity(dpi(4));
-	generateConsoleLogs({seed, features});
+	let hash = hl.tx.hash;
+	let tokenId = hl.tx.tokenId;
+	let traits = hl.token.getTraits();
+	generateConsoleLogs({seed, hash, tokenId, traits});
+	initSketch();
+}
+
+function initSketch() {
+	dpi_val = sp.get("dpi").length > 0 ? parseFloat(sp.get("dpi")) : 2;
+	console.log(dpi_val);
+	pixelDensity(dpi(dpi_val));
+
 	elapsedTime = 0;
 	framesRendered = 0;
 	drawing = true;
@@ -542,14 +550,11 @@ function setup() {
 	rectMode(CENTER);
 	rseed = randomSeed(hl.randomInt(100000));
 	nseed = noiseSeed(hl.randomInt(100000));
-	let rnd = random(1);
 
 	colorMode(HSB, 360, 100, 100, 100);
 	startTime = frameCount;
 	noCursor();
-
 	INIT();
-
 	renderStart = Date.now();
 	generateStars();
 	let sketch = drawGenerator();
@@ -557,7 +562,6 @@ function setup() {
 		animation = setTimeout(animate, 0);
 		sketch.next();
 	}
-
 	animate();
 }
 
@@ -654,7 +658,7 @@ function generateStars() {
 		let x = random(0, width);
 		let y = random(0, height);
 		let hue = random([0, 5, 10, 15, 20, 25, 30, 35, 30, 35, 190, 195, 200, 205, 210, 215, 220, 225]);
-		let sat = isColored ? random([0, 0, 10, 10, 10, 20, 30, 40, 50]) : 0;
+		let sat = features.isColored ? random([0, 0, 10, 10, 10, 20, 30, 40, 50]) : 0;
 		let bri = 100;
 		stars.push(new Stars(x, y, hue, sat, bri, xMin, xMax, yMin, yMax));
 	}
@@ -697,12 +701,11 @@ function showLoadingBar(elapsedTime, MAX_FRAMES, renderStart) {
 
 	// put the percent in the title of the page
 	document.title = percent.toFixed(0) + "%";
-	/* 	dom_dashboard.innerHTML = percent.toFixed(0) + "%" + " - Time left : " + timeLeftSec + "s";
+	// show a loading bar on the bottom of the canvas
 
-	if (percent.toFixed(0) >= 100) {
-		dom_dashboard.innerHTML = "Done!";
-		dom_spin.classList.remove("active");
-	} */
+	let dom_loading = document.querySelector(".loading");
+
+	dom_loading.innerHTML = percent.toFixed(0) + "%";
 }
 
 class Stars {
@@ -784,14 +787,12 @@ class Mover {
 		}
 		this.shutterLow = 1;
 		this.apertureLow = 0.1;
-		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER; //!try randomizing this
+		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER;
 		this.lineWeightMax = this.shutterHigh;
 		this.skipperMax = 10;
-		this.uvalue = [10, 10, 10, 10]; //! try with 25,10 or 5
+		this.uvalue = [10, 10, 10, 10];
 		this.nvalue = [0.5, 0.5, 0.5, 0.5];
 		this.nlimit = features.reverb === "very fast" ? 0.25 : features.reverb === "fast" ? 0.5 : features.reverb === "standard" ? 1 : features.reverb === "slow" ? 1.5 : 2;
-
-		//! jouer avec le negatif et le positif
 		this.nvalueDir = [-1, -1, -1, -1];
 		this.uvalueDir = [1, 1, 1, 1];
 
@@ -818,8 +819,6 @@ class Mover {
 		fill(this.hue, this.sat, this.bri, this.a);
 		noStroke();
 		rect(this.x, this.y, this.s);
-		/* 		drawingContext.fillStyle = `hsla(${this.hue}, ${this.sat}%, ${this.bri}%, ${this.a}%)`;
-		drawingContext.fillRect(this.x, this.y, this.s, this.s); */
 	}
 
 	move(frameCount) {
@@ -893,7 +892,7 @@ class Mover {
 		let totalSpeed = abs(velocity.mag());
 
 		this.sat += map(totalSpeed, 0, 600 * MULTIPLIER, -this.satDir, this.satDir, true);
-		if (isColored) {
+		if (features.isColored) {
 			this.sat = this.sat > 80 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 80) : this.sat;
 		} else {
 			this.sat = 0;
@@ -946,13 +945,45 @@ function superCurve(x, y, scl1, scl2, amp1, amp2, octave, nvalue, uvalue) {
 	nx += dx * a1;
 	ny += dy * a2;
 
-	//! use same index and/or same octave for both u and n
-	let un = oct(nx, ny, scale1, 0, octave);
-	let vn = oct(nx, ny, scale2, 2, octave);
+	let un = oct(nx, ny, scale1, 3, octave);
+	let vn = oct(nx, ny, scale2, 4, octave);
 
 	let u = map(un, -nvalue[0], nvalue[1], -uvalue[0], uvalue[1], true);
 	let v = map(vn, -nvalue[2], nvalue[3], -uvalue[2], uvalue[3], true);
 
 	let p = createVector(u, v);
 	return p;
+}
+
+document.addEventListener("keydown", function (event) {
+	const keyMappings = {
+		1: 1,
+		2: 2,
+		3: 3,
+		4: 4,
+		5: 5,
+		6: 6,
+	};
+
+	if (event.key in keyMappings) {
+		mod_dpi_mode(keyMappings[event.key]);
+	}
+
+	if (event.key === "h") {
+		// toggle the loading element
+		let dom_loading = document.querySelector(".loading");
+		dom_loading.style.display = dom_loading.style.display === "none" ? "block" : "none";
+	}
+});
+function mod_dpi_mode(dpi_value) {
+	setTimeout(() => {
+		// check the current url params and remove the dpi param
+		let url = new URL(window.location.href);
+		let params = new URLSearchParams(url.search);
+		params.delete("dpi");
+		// set the new dpi value
+		params.set("dpi", dpi_value);
+		// reload the page with the new dpi value in the url
+		window.location = window.location.origin + window.location.pathname + "?" + params.toString();
+	}, 10);
 }

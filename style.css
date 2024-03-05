@@ -1,3 +1,6 @@
+* {
+	box-sizing: border-box;
+}
 html {
 	flex-direction: column;
 }
@@ -40,4 +43,18 @@ canvas.p5Canvas {
 	max-height: var(--hContent);
 	max-height: 100vh;
 	width: auto !important;
+}
+
+main {
+	position: relative;
+}
+
+.loading {
+	position: absolute;
+	display: block;
+	top: 10px;
+	right: 10px;
+	color: white;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
 }
