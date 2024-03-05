@@ -234,8 +234,18 @@ TAU = PI * 2;
 F = (N, f) => [...Array(N)].map((_, i) => f(i));
 
 //! Traits setup
-let isColored = hl.randomBool(0.75);
-//let isColored = hl.randomElement([true, false]);
+
+const isColoredArr = [
+	[true, 75],
+	[false, 25],
+];
+
+const colorModeArr = [
+	["fixed", 25],
+	["variable", 25],
+	["dynamic", 25],
+	["iridescent", 25],
+];
 
 const bgTypeArr = [
 	["monochrome", 20],
@@ -334,6 +344,8 @@ const reverbArr = [
 ];
 
 function generate_composition_params(
+	colorMode,
+	isColored,
 	complexity,
 	evolution,
 	scaleLock,
@@ -350,6 +362,18 @@ function generate_composition_params(
 	reverb
 ) {
 	// SET DEFAULTS IF NOT PASSED IN
+
+	if (isColored === undefined) {
+		isColored = weighted_choice(isColoredArr);
+	}
+	if (colorMode === undefined) {
+		if (isColored) {
+			colorMode = weighted_choice(colorModeArr);
+		} else {
+			colorMode = "fixed";
+		}
+	}
+
 	if (complexity === undefined) {
 		complexity = weighted_choice(complexityArr);
 	}
@@ -409,6 +433,8 @@ function generate_composition_params(
 
 	//* PACK PARAMETERS INTO OBJECT *//
 	var composition_params = {
+		isColored: isColored,
+		colorMode: colorMode,
 		complexity: complexity,
 		evolution: evolution,
 		scaleLock: scaleLock,
@@ -431,10 +457,28 @@ function generate_composition_params(
 
 let composition_params = generate_composition_params();
 
-var {complexity, evolution, scaleLock, dividerLock, backgroundType, backgroundHue, cosmicOscillation, serendipity, optics, apertureSetting, autofocus, shutterSpeed, apertureSize, reverb} =
-	composition_params;
+var {
+	isColored,
+	colorMode,
+	complexity,
+	evolution,
+	scaleLock,
+	dividerLock,
+	backgroundType,
+	backgroundHue,
+	cosmicOscillation,
+	serendipity,
+	optics,
+	apertureSetting,
+	autofocus,
+	shutterSpeed,
+	apertureSize,
+	reverb,
+} = composition_params;
 
 hl.token.setTraits({
+	"Is colorized?": isColored,
+	"Color Mode": colorMode,
 	Complexity: complexity,
 	Colored: isColored,
 	Evolution: evolution,
@@ -766,7 +810,7 @@ class Mover {
 			this.ulow = selectedConfig.ulow;
 			this.uhigh = selectedConfig.uhigh;
 		}
-		this.hueStep = 0.05;
+		this.hueStep = features.colorMode === "iridescent" ? 0.5 : features.colorMode === "dynamic" ? 0.25 : features.colorMode === "variable" ? 0.05 : 0;
 		this.satDir = random([2]);
 	}
 
