@@ -892,9 +892,9 @@ class Mover {
 
 		let totalSpeed = abs(velocity.mag());
 
-		this.sat += map(totalSpeed, 0, 400 * MULTIPLIER, -this.satDir, this.satDir, true);
+		this.sat += map(totalSpeed, 0, 600 * MULTIPLIER, -this.satDir, this.satDir, true);
 		if (isColored) {
-			this.sat = this.sat > 100 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 100) : this.sat;
+			this.sat = this.sat > 80 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 80) : this.sat;
 		} else {
 			this.sat = 0;
 		}
