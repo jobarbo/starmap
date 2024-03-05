@@ -638,8 +638,8 @@ function INIT() {
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
 	gradient.addColorStop(0, `hsl(${bgHue}, ${bgSaturation}%, 2%)`);
 	gradient.addColorStop(0.2, `hsl(${bgHue - 10}, ${bgSaturation}%, 4%)`);
-	gradient.addColorStop(0.8, `hsl(${bgHue - 20}, ${bgSaturation}%, 6%)`);
-	gradient.addColorStop(1, `hsl(${bgHue - 30}, ${bgSaturation - 30}%, 8%)`);
+	gradient.addColorStop(0.8, `hsl(${bgHue - 20}, ${bgSaturation}%, 8%)`);
+	gradient.addColorStop(1, `hsl(${bgHue - 30}, ${bgSaturation - 30}%, 10%)`);
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
 	//background(45, 100, 100);
@@ -649,7 +649,7 @@ function INIT() {
 function generateStars() {
 	//generate stars
 	let stars = [];
-	let starNum = 300;
+	let starNum = random([100, 300, 500, 700]);
 	for (let i = 0; i < starNum; i++) {
 		let x = random(0, width);
 		let y = random(0, height);
