@@ -512,7 +512,7 @@ let startTime;
 let MAX_FRAMES = 800;
 let C_WIDTH;
 let MULTIPLIER;
-let RATIO = 1;
+let RATIO = 1.3333333333;
 
 let drawing = true;
 let elapsedTime = 0;
