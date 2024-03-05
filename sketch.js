@@ -310,19 +310,19 @@ const autofocusArr = [
 ];
 
 const shutterSpeedArr = [
-	["very fast", 3],
-	["fast", 30],
+	["very fast", 1],
+	["fast", 9],
 	["normal", 60],
-	["slow", 3],
-	["very slow", 3],
+	["slow", 20],
+	["very slow", 10],
 ];
 
 const apertureSizeArr = [
-	["very near", 3],
-	["near", 20],
-	["normal", 70],
-	["far", 3],
-	["very far", 3],
+	["very large", 5],
+	["large", 20],
+	["normal", 60],
+	["small", 10],
+	["very small", 5],
 ];
 
 const reverbArr = [
@@ -730,7 +730,7 @@ class Mover {
 		this.oct = features.complexity;
 		this.zombie = false;
 		this.shutterHigh = features.shutterSpeed === "very fast" ? 1 : features.shutterSpeed === "fast" ? 10 : features.shutterSpeed === "normal" ? 20 : features.shutterSpeed === "slow" ? 30 : 50;
-		this.apertureHigh = features.apertureSize === "very far" ? 0.1 : features.apertureSize === "far" ? 5 : features.apertureSize === "normal" ? 10 : features.apertureSize === "near" ? 15 : 20;
+		this.apertureHigh = features.apertureSize === "very small" ? 0.1 : features.apertureSize === "small" ? 5 : features.apertureSize === "normal" ? 10 : features.apertureSize === "large" ? 15 : 20;
 		if (features.apertureSetting === "variable fixed") {
 			this.xRandSkipperVal = random([0.01, random([0.1, 1, 2, 5, 7, 10, 12, 15])]);
 			this.yRandSkipperVal = this.xRandSkipperVal;
