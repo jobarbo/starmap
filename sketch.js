@@ -753,11 +753,11 @@ class Mover {
 
 		const serendipity_config = {
 			"error-borne": {ulow: random([10, 25, 50, 75, 100, 125, 150, 175, 200]), uhigh: random([0.01, 0.1, 1, 2.5, 5, 10, 20])},
-			"error-borne lite": {ulow: random([50, 75, 100]) * MULTIPLIER, uhigh: random([0.01, 0.1, 1]) * MULTIPLIER},
-			Walpolian: {ulow: random([10, 25, 50, 75, 100]) * MULTIPLIER, uhigh: 150 * MULTIPLIER},
-			Mertonian: {ulow: random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]) * MULTIPLIER, uhigh: random([100, 125, 150, 175, 200]) * MULTIPLIER},
-			"network-emergent": {ulow: random([150]) * MULTIPLIER, uhigh: random([0.001]) * MULTIPLIER},
-			"theory-led": {ulow: random([5]) * MULTIPLIER, uhigh: random([150]) * MULTIPLIER},
+			"error-borne lite": {ulow: random([50, 75, 100]), uhigh: random([0.01, 0.1, 1])},
+			Walpolian: {ulow: random([10, 25, 50, 75, 100]), uhigh: 150},
+			Mertonian: {ulow: random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]), uhigh: random([100, 125, 150, 175, 200])},
+			"network-emergent": {ulow: random([150]), uhigh: random([0.001])},
+			"theory-led": {ulow: random([5]), uhigh: random([150])},
 		};
 
 		const selectedConfig = serendipity_config[features.serendipity];
