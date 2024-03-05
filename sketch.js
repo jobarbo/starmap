@@ -465,7 +465,7 @@ let xMax;
 let yMin;
 let yMax;
 let startTime;
-let maxFrames = 800;
+let MAX_FRAMES = 800;
 let C_WIDTH;
 let MULTIPLIER;
 let RATIO = 1;
@@ -476,25 +476,17 @@ let renderStart = Date.now();
 let framesRendered = 0;
 let totalElapsedTime = 0;
 
-let centerX;
-let centerY;
-let borderX;
-let borderY;
 let particleNum = 25000;
+let cycle = parseInt((MAX_FRAMES * particleNum) / 1170);
 
-// if bg type is monochrome, set the saturation to 0; else, set it to 100
 let bgSaturation = features.backgroundType === "monochrome" ? 0 : 100;
-
-// if bg hue is set to purple, set the hue to 270; if bg hue is set to blue, set the hue to 220 and so on
 let bgHue = features.backgroundHue === "purple" ? 270 : features.backgroundHue === "blue" ? 240 : 290;
-
-let cycle = parseInt((maxFrames * particleNum) / 1170);
 
 function setup() {
 	console.log("seed: ", seed);
 	console.log("hash:", hl.tx.hash);
 	console.log("token id:", hl.tx.tokenId);
-	pixelDensity(dpi(3));
+	pixelDensity(dpi(4));
 	generateConsoleLogs({seed, features});
 	elapsedTime = 0;
 	framesRendered = 0;
@@ -511,9 +503,6 @@ function setup() {
 	colorMode(HSB, 360, 100, 100, 100);
 	startTime = frameCount;
 	noCursor();
-
-	centerX = width / 2;
-	centerY = height / 2;
 
 	INIT();
 
@@ -548,11 +537,13 @@ function* drawGenerator() {
 
 		elapsedTime = frameCount - startTime;
 
-		showLoadingBar(elapsedTime, maxFrames, renderStart);
+		showLoadingBar(elapsedTime, MAX_FRAMES, renderStart);
 
 		frameCount++;
-		if (elapsedTime > maxFrames && drawing) {
+		if (elapsedTime > MAX_FRAMES && drawing) {
 			window.rendered = c.canvas;
+			hl.token.capturePreview();
+			console.log(hl.context.previewMode);
 			document.complete = true;
 			// calculate the time it took to render the image
 			let endTime = Date.now();
@@ -601,7 +592,7 @@ function INIT() {
 	// make a gradient background from top to bottom in vanilla JS
 	drawingContext.globalCompositeOperation = "source-over";
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
-	gradient.addColorStop(0, `hsl(${bgHue}, ${bgSaturation}%, 3%)`);
+	gradient.addColorStop(0, `hsl(${bgHue}, ${bgSaturation}%, 2%)`);
 	gradient.addColorStop(0.2, `hsl(${bgHue - 10}, ${bgSaturation}%, 4%)`);
 	gradient.addColorStop(0.8, `hsl(${bgHue - 20}, ${bgSaturation}%, 6%)`);
 	gradient.addColorStop(1, `hsl(${bgHue - 30}, ${bgSaturation - 30}%, 8%)`);
@@ -644,17 +635,17 @@ function generateStars() {
 	blendMode(BLEND);
 }
 
-function showLoadingBar(elapsedTime, maxFrames, renderStart) {
+function showLoadingBar(elapsedTime, MAX_FRAMES, renderStart) {
 	framesRendered++;
 	let currentTime = Date.now();
 	totalElapsedTime = currentTime - renderStart;
 
-	let percent = (elapsedTime / maxFrames) * 100;
+	let percent = (elapsedTime / MAX_FRAMES) * 100;
 	if (percent > 100) percent = 100;
 
 	let averageFrameTime = totalElapsedTime / framesRendered;
 
-	let remainingFrames = maxFrames - framesRendered;
+	let remainingFrames = MAX_FRAMES - framesRendered;
 	let estimatedTimeRemaining = averageFrameTime * remainingFrames;
 
 	// Convert milliseconds to seconds
@@ -737,8 +728,6 @@ class Mover {
 		this.yMin = yMin;
 		this.yMax = yMax;
 		this.oct = features.complexity;
-		this.centerX = width / 2;
-		this.centerY = height / 2;
 		this.zombie = false;
 		this.shutterHigh = features.shutterSpeed === "very fast" ? 1 : features.shutterSpeed === "fast" ? 10 : features.shutterSpeed === "normal" ? 20 : features.shutterSpeed === "slow" ? 30 : 50;
 		this.apertureHigh = features.apertureSize === "very far" ? 0.1 : features.apertureSize === "far" ? 5 : features.apertureSize === "normal" ? 10 : features.apertureSize === "near" ? 15 : 20;
@@ -799,20 +788,20 @@ class Mover {
 
 		if (features.optics === "focus-in") {
 			//! standard interpolation
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterHigh, this.shutterLow, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureHigh, this.apertureLow, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureHigh, this.apertureLow, true);
 		} else if (features.optics === "focus-out") {
 			//!inverted interpolation
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterLow, this.shutterHigh, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureLow, this.apertureHigh, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureLow, this.apertureHigh, true);
 		} else if (features.optics === "starlight") {
 			//!Mirror interpolation creates more "starrs"
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterLow, this.shutterHigh, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureHigh, this.apertureLow, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureHigh, this.apertureLow, true);
 		} else if (features.optics === "mirror") {
 			//!Mirror interpolation config 2
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterHigh, this.shutterLow, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureLow, this.apertureHigh, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureLow, this.apertureHigh, true);
 		}
 
 		if (features.apertureSetting != "fixed" && features.apertureSetting != "variable fixed") {
