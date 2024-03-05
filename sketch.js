@@ -799,20 +799,20 @@ class Mover {
 
 		if (features.optics === "focus-in") {
 			//! standard interpolation
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterHigh, this.shutterLow, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureHigh, this.apertureLow, true);
 		} else if (features.optics === "focus-out") {
 			//!inverted interpolation
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterLow, this.shutterHigh, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureLow, this.apertureHigh, true);
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureLow, this.apertureHigh, true);
 		} else if (features.optics === "starlight") {
 			//!Mirror interpolation creates more "starrs"
-			this.lineWeightMax = map(frameCount, 150, maxFrames - 100, this.shutterLow, this.shutterHigh, true);
-			this.skipperMax = map(frameCount, 150, maxFrames - 100, this.apertureHigh, this.apertureLow, true);
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureHigh, this.apertureLow, true);
 		} else if (features.optics === "mirror") {
 			//!Mirror interpolation config 2
-			this.lineWeightMax = map(frameCount, maxFrames - 100, 400, this.shutterHigh, this.shutterLow, true);
-			this.skipperMax = map(frameCount, maxFrames - 100, 400, this.apertureLow, this.apertureHigh, true);
+			this.lineWeightMax = map(frameCount, 150, maxFrames - 150, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, maxFrames - 150, this.apertureLow, this.apertureHigh, true);
 		}
 
 		if (features.apertureSetting != "fixed" && features.apertureSetting != "variable fixed") {
