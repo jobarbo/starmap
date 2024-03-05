@@ -238,8 +238,8 @@ let isColored = hl.randomBool(0.75);
 //let isColored = hl.randomElement([true, false]);
 
 const bgTypeArr = [
-	["monochrome", 50],
-	["gradient", 50],
+	["monochrome", 20],
+	["gradient", 80],
 ];
 
 const bgHueArr = [
@@ -299,9 +299,9 @@ const opticsArr = [
 
 const apertureSettingsArr = [
 	["fixed", 5],
-	["variable fixed", 15],
-	["flowy", 40],
-	["textured", 40],
+	["variable fixed", 5],
+	["flowy", 45],
+	["textured", 45],
 ];
 
 const autofocusArr = [
@@ -310,27 +310,27 @@ const autofocusArr = [
 ];
 
 const shutterSpeedArr = [
-	["very fast", 10],
-	["fast", 10],
+	["very fast", 3],
+	["fast", 30],
 	["normal", 60],
-	["slow", 10],
-	["very slow", 10],
+	["slow", 3],
+	["very slow", 3],
 ];
 
 const apertureSizeArr = [
-	["very near", 10],
-	["near", 10],
-	["normal", 60],
-	["far", 10],
-	["very far", 10],
+	["very near", 3],
+	["near", 20],
+	["normal", 70],
+	["far", 3],
+	["very far", 3],
 ];
 
 const reverbArr = [
-	["very slow", 10],
-	["slow", 50],
-	["standard", 20],
-	["fast", 10],
-	["very fast", 10],
+	["very slow", 3],
+	["slow", 60],
+	["standard", 30],
+	["fast", 3],
+	["very fast", 3],
 ];
 
 function generate_composition_params(
