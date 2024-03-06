@@ -511,7 +511,7 @@ let startTime;
 let MAX_FRAMES = 800;
 let C_WIDTH;
 let MULTIPLIER;
-let RATIO = 1.33;
+let RATIO = 1;
 
 let animation;
 let drawing = true;
@@ -783,7 +783,7 @@ class Mover {
 			this.xRandSkipperVal = 0.1;
 			this.yRandSkipperVal = this.xRandSkipperVal;
 		}
-		this.shutterLow = 3;
+		this.shutterLow = 2;
 		this.apertureLow = 0.1;
 		this.lineWeight = hl.randomElement([0, hl.randomElement([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER;
 		this.lineWeightMax = this.shutterHigh;
@@ -809,7 +809,7 @@ class Mover {
 			this.ulow = selectedConfig.ulow;
 			this.uhigh = selectedConfig.uhigh;
 		}
-		this.hueStep = features.colorMode === "iridescent" ? 0.25 : features.colorMode === "dynamic" ? 0.15 : features.colorMode === "variable" ? 0.05 : 0;
+		this.hueStep = features.colorMode === "iridescent" ? 0.4 : features.colorMode === "dynamic" ? 0.2 : features.colorMode === "variable" ? 0.05 : 0;
 		this.satDir = 2;
 	}
 
