@@ -240,10 +240,10 @@ const isColoredArr = [
 ];
 
 const colorModeArr = [
-	["fixed", 20],
-	["variable", 50],
-	["dynamic", 20],
-	["iridescent", 10],
+	["fixed", 10],
+	["variable", 40],
+	["dynamic", 30],
+	["iridescent", 20],
 ];
 
 const bgTypeArr = [
@@ -267,10 +267,10 @@ const complexityArr = [
 ];
 
 const evolutionArr = [
-	["starmap", 40],
-	["equilibrium", 40],
-	["original linear", 10],
-	["original exponential", 10],
+	["starmap", 30],
+	["equilibrium", 60],
+	["original linear", 5],
+	["original exponential", 5],
 ];
 
 const scaleConfigArr = [
@@ -284,19 +284,19 @@ const dividerConfigArr = [
 ];
 
 const cosmicOscillationArr = [
-	["none", 1],
-	["sonification", 3],
-	["motion", 1],
-	["full", 95],
+	["none", 0],
+	["sonification", 0],
+	["motion", 0],
+	["full", 100],
 ];
 
 const serendiptyArr = [
-	["error-borne", 70],
-	["error-borne lite", 22],
-	["Walpolian", 2],
-	["Mertonian", 2],
-	["network-emergent", 2],
-	["theory-led", 2],
+	["error-borne", 50],
+	["error-borne lite", 15],
+	["Walpolian", 10],
+	["Mertonian", 10],
+	["network-emergent", 5],
+	["theory-led", 10],
 ];
 
 const opticsArr = [
@@ -321,8 +321,8 @@ const autofocusArr = [
 const shutterSpeedArr = [
 	["very fast", 2],
 	["fast", 4],
-	["normal", 60],
-	["slow", 30],
+	["normal", 80],
+	["slow", 10],
 	["very slow", 4],
 ];
 
@@ -336,8 +336,8 @@ const apertureSizeArr = [
 
 const reverbArr = [
 	["very slow", 3],
-	["slow", 60],
-	["standard", 30],
+	["slow", 70],
+	["standard", 20],
 	["fast", 3],
 	["very fast", 3],
 ];
@@ -511,7 +511,7 @@ let startTime;
 let MAX_FRAMES = 800;
 let C_WIDTH;
 let MULTIPLIER;
-let RATIO = 1;
+let RATIO = 1.33;
 
 let animation;
 let drawing = true;
@@ -660,7 +660,7 @@ function generateStars() {
 		let bri = 100;
 		stars.push(new Stars(x, y, hue, sat, bri, xMin, xMax, yMin, yMax));
 	}
-	blendMode(SCREEN);
+	//blendMode(SCREEN);
 	for (let i = 0; i < starNum; i++) {
 		for (let j = 0; j < 1000; j++) {
 			let xi = 0.2;
@@ -725,7 +725,7 @@ class Stars {
 	}
 
 	show() {
-		fill(this.hue, this.sat, this.bri, hl.randomElement([10, 50, 70, 100]));
+		fill(this.hue, this.sat, this.bri, hl.randomElement([1, 10, 25, 50, 70, 100]));
 		noStroke();
 		rect(this.x, this.y, this.s);
 	}
@@ -754,7 +754,7 @@ class Mover {
 		this.initBri = random([0, 10, 10, 10, 20, 50, 100, 100, 100, 100, 100, 100, 100]);
 		//this.initBri = hl.randomElement([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
-		this.initS = 0.2 * MULTIPLIER;
+		this.initS = 0.22 * MULTIPLIER;
 		this.hue = this.initHue;
 		this.sat = 100;
 		this.bri = this.initBri;
