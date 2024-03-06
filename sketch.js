@@ -538,7 +538,6 @@ function setup() {
 function initSketch() {
 	dpi_val = sp.has("dpi") && sp.get("dpi").length > 0 ? parseFloat(sp.get("dpi")) : 2;
 
-	console.log(dpi_val);
 	pixelDensity(dpi(dpi_val));
 
 	elapsedTime = 0;
