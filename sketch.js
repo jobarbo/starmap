@@ -1,4 +1,4 @@
-let seed = parseInt(Math.floor(hl.random() * 10000000));
+let seed = hl.randomInt(10000000);
 let noiseCanvasWidth = 0;
 let noiseCanvasHeight = 0;
 
@@ -27,7 +27,6 @@ F = (N, f) => [...Array(N)].map((_, i) => f(i)); // for loop / map / list functi
 
 // A seeded PRNG =========================================================
 //seed = 'das9d7as9d7as'; // random seed]
-seed = hl.random() * 2 ** 32;
 
 S = Uint32Array.of(9, 7, 5, 3); // PRNG state
 R = (a = 1) => a * ((a = S[3]), (S[3] = S[2]), (S[2] = S[1]), (a ^= a << 11), (S[0] ^= a ^ (a >>> 8) ^ ((S[1] = S[0]) >>> 19)), S[0] / 2 ** 32); // random function
@@ -310,13 +309,13 @@ const opticsArr = [
 const apertureSettingsArr = [
 	["fixed", 5],
 	["variable fixed", 5],
-	["flowy", 45],
-	["textured", 45],
+	["flowy", 70],
+	["textured", 20],
 ];
 
 const autofocusArr = [
-	["autofocus", 50],
-	["manual", 50],
+	["autofocus", 30],
+	["manual", 70],
 ];
 
 const shutterSpeedArr = [
@@ -512,7 +511,7 @@ let startTime;
 let MAX_FRAMES = 800;
 let C_WIDTH;
 let MULTIPLIER;
-let RATIO = 1.3333333333;
+let RATIO = 1;
 
 let animation;
 let drawing = true;
@@ -591,7 +590,6 @@ function* drawGenerator() {
 		if (elapsedTime > MAX_FRAMES && drawing) {
 			window.rendered = c.canvas;
 			hl.token.capturePreview();
-			console.log(hl.context.previewMode);
 			document.complete = true;
 			// calculate the time it took to render the image
 			let endTime = Date.now();
@@ -606,21 +604,21 @@ function* drawGenerator() {
 
 function INIT() {
 	if (features.scaleLock === "locked") {
-		scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
+		scl1 = hl.randomElement([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
 		scl2 = scl1;
 	} else {
-		scl1 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
-		scl2 = random([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
+		scl1 = hl.randomElement([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
+		scl2 = hl.randomElement([0.0014, 0.0015, 0.0016, 0.0017, 0.0018, 0.0019, 0.00195]);
 	}
 
 	amp1 = 1;
 	amp2 = 1;
 	if (features.dividerLock === "locked") {
-		xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+		xRandDivider = hl.randomElement([0.08, 0.09, 0.1, 0.11, 0.12]);
 		yRandDivider = xRandDivider;
 	} else {
-		xRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
-		yRandDivider = random([0.08, 0.09, 0.1, 0.11, 0.12]);
+		xRandDivider = hl.randomElement([0.08, 0.09, 0.1, 0.11, 0.12]);
+		yRandDivider = hl.randomElement([0.08, 0.09, 0.1, 0.11, 0.12]);
 	}
 
 	xMin = -0.01;
@@ -628,11 +626,11 @@ function INIT() {
 	yMin = -0.01;
 	yMax = 1.01;
 
-	let hue = random([20, 25, 30, 35, 40, 195, 200, 210, 220]);
+	let hue = hl.randomElement([20, 25, 30, 35, 40, 195, 200, 210, 220]);
 	for (let i = 0; i < particleNum; i++) {
-		let x = random(xMin, xMax) * width;
-		let y = random(yMin, yMax) * height;
-		let initHue = hue + random(-1, 1);
+		let x = hl.random(xMin, xMax) * width;
+		let y = hl.random(yMin, yMax) * height;
+		let initHue = hue + hl.random(-1, 1);
 		initHue = initHue > 360 ? initHue - 360 : initHue < 0 ? initHue + 360 : initHue;
 		movers.push(new Mover(x, y, initHue, scl1 / MULTIPLIER, scl2 / MULTIPLIER, amp1 * MULTIPLIER, amp2 * MULTIPLIER, xMin, xMax, yMin, yMax, xRandDivider, yRandDivider, features));
 	}
@@ -642,8 +640,8 @@ function INIT() {
 	let gradient = drawingContext.createLinearGradient(0, 0, 0, height);
 	gradient.addColorStop(0, `hsl(${bgHue}, ${bgSaturation}%, 2%)`);
 	gradient.addColorStop(0.2, `hsl(${bgHue - 10}, ${bgSaturation}%, 4%)`);
-	gradient.addColorStop(0.8, `hsl(${bgHue - 20}, ${bgSaturation}%, 8%)`);
-	gradient.addColorStop(1, `hsl(${bgHue - 30}, ${bgSaturation - 30}%, 10%)`);
+	gradient.addColorStop(0.8, `hsl(${bgHue - 20}, ${bgSaturation}%, 6%)`);
+	gradient.addColorStop(1, `hsl(${bgHue - 30}, ${bgSaturation - 30}%, 8%)`);
 	drawingContext.fillStyle = gradient;
 	drawingContext.fillRect(0, 0, width, height);
 	//background(45, 100, 100);
@@ -653,16 +651,16 @@ function INIT() {
 function generateStars() {
 	//generate stars
 	let stars = [];
-	let starNum = random([100, 300, 500, 700]);
+	let starNum = hl.randomElement([250, 350, 500]);
 	for (let i = 0; i < starNum; i++) {
-		let x = random(0, width);
-		let y = random(0, height);
-		let hue = random([0, 5, 10, 15, 20, 25, 30, 35, 30, 35, 190, 195, 200, 205, 210, 215, 220, 225]);
-		let sat = features.isColored ? random([0, 0, 10, 10, 10, 20, 30, 40, 50]) : 0;
+		let x = hl.random(0, width);
+		let y = hl.random(0, height);
+		let hue = hl.randomElement([0, 5, 10, 15, 20, 25, 30, 35, 30, 35, 190, 195, 200, 205, 210, 215, 220, 225]);
+		let sat = features.isColored ? hl.randomElement([0, 0, 10, 10, 10, 20, 30, 40, 50]) : 0;
 		let bri = 100;
 		stars.push(new Stars(x, y, hue, sat, bri, xMin, xMax, yMin, yMax));
 	}
-	blendMode(BLEND);
+	blendMode(SCREEN);
 	for (let i = 0; i < starNum; i++) {
 		for (let j = 0; j < 1000; j++) {
 			let xi = 0.2;
@@ -722,12 +720,12 @@ class Stars {
 		this.xMax = xMax;
 		this.yMin = yMin;
 		this.yMax = yMax;
-		this.xRandSkipperVal = random([0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 1, 1.5, 2, 2.5, 3, 5]);
+		this.xRandSkipperVal = hl.randomElement([0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 1, 1.5, 2, 2.5, 3, 4]);
 		this.yRandSkipperVal = this.xRandSkipperVal;
 	}
 
 	show() {
-		fill(this.hue, this.sat, this.bri, random([10, 50, 70, 100]));
+		fill(this.hue, this.sat, this.bri, hl.randomElement([10, 50, 70, 100]));
 		noStroke();
 		rect(this.x, this.y, this.s);
 	}
@@ -737,8 +735,8 @@ class Stars {
 		this.y = this.initY;
 
 		// Adjust the distribution of random values for star-like shapes
-		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal) * xi + random(-1, 1) * 0.15;
-		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal) * yi + random(-1, 1) * 0.15;
+		this.xRandSkipper = randomGaussian(0, this.xRandSkipperVal) * xi + hl.random(-1, 1) * 0.15;
+		this.yRandSkipper = randomGaussian(0, this.yRandSkipperVal) * yi + hl.random(-1, 1) * 0.15;
 
 		let skipper = createVector(this.xRandSkipper, this.yRandSkipper);
 		this.x += skipper.x * MULTIPLIER;
@@ -751,10 +749,10 @@ class Mover {
 		this.x = x;
 		this.y = y;
 		this.initHue = hue;
-		this.initSat = random([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
+		this.initSat = hl.randomElement([0, 0, 0, 0, 0, 10, 10, 10, 20, 30, 80, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
 
-		//this.initBri = random([0, 10, 10, 10, 20, 50, 100, 100, 100, 100, 100, 100, 100]);
-		this.initBri = random([100, 100, 100, 100, 100, 100, 100, 100, 100]);
+		this.initBri = random([0, 10, 10, 10, 20, 50, 100, 100, 100, 100, 100, 100, 100]);
+		//this.initBri = hl.randomElement([100, 100, 100, 100, 100, 100, 100, 100, 100]);
 		this.initAlpha = 100;
 		this.initS = 0.2 * MULTIPLIER;
 		this.hue = this.initHue;
@@ -779,15 +777,15 @@ class Mover {
 		this.shutterHigh = features.shutterSpeed === "very fast" ? 1 : features.shutterSpeed === "fast" ? 10 : features.shutterSpeed === "normal" ? 20 : features.shutterSpeed === "slow" ? 30 : 50;
 		this.apertureHigh = features.apertureSize === "very small" ? 0.1 : features.apertureSize === "small" ? 5 : features.apertureSize === "normal" ? 10 : features.apertureSize === "large" ? 15 : 20;
 		if (features.apertureSetting === "variable fixed") {
-			this.xRandSkipperVal = random([0.01, random([0.1, 1, 2, 5, 7, 10, 12, 15])]);
+			this.xRandSkipperVal = hl.randomElement([0.01, hl.randomElement([0.1, 1, 2, 5, 7, 10, 12, 15])]);
 			this.yRandSkipperVal = this.xRandSkipperVal;
 		} else if (features.apertureSetting === "fixed") {
 			this.xRandSkipperVal = 0.1;
 			this.yRandSkipperVal = this.xRandSkipperVal;
 		}
-		this.shutterLow = 1;
+		this.shutterLow = 3;
 		this.apertureLow = 0.1;
-		this.lineWeight = random([0, random([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER;
+		this.lineWeight = hl.randomElement([0, hl.randomElement([0.01, 0.05, 0.1, 1, 5, 8, 10, 12])]) * MULTIPLIER;
 		this.lineWeightMax = this.shutterHigh;
 		this.skipperMax = 10;
 		this.uvalue = [10, 10, 10, 10];
@@ -797,12 +795,12 @@ class Mover {
 		this.uvalueDir = [1, 1, 1, 1];
 
 		const serendipity_config = {
-			"error-borne": {ulow: random([10, 25, 50, 75, 100, 125, 150, 175, 200]), uhigh: random([0.01, 0.1, 1, 2.5, 5, 10, 20])},
-			"error-borne lite": {ulow: random([50, 75, 100]), uhigh: random([0.01, 0.1, 1])},
-			Walpolian: {ulow: random([10, 25, 50, 75, 100]), uhigh: 150},
-			Mertonian: {ulow: random([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]), uhigh: random([100, 125, 150, 175, 200])},
-			"network-emergent": {ulow: random([150]), uhigh: random([0.001])},
-			"theory-led": {ulow: random([5]), uhigh: random([150])},
+			"error-borne": {ulow: hl.randomElement([10, 25, 50, 75, 100, 125, 150, 175, 200]), uhigh: hl.randomElement([0.01, 0.1, 1, 2.5, 5, 10, 20])},
+			"error-borne lite": {ulow: hl.randomElement([50, 75, 100]), uhigh: hl.randomElement([0.01, 0.1, 1])},
+			Walpolian: {ulow: hl.randomElement([10, 25, 50, 75, 100]), uhigh: 150},
+			Mertonian: {ulow: hl.randomElement([0.01, 0.1, 1, 1.5, 2, 2.5, 3.5, 5, 7.5, 10]), uhigh: hl.randomElement([100, 125, 150, 175, 200])},
+			"network-emergent": {ulow: hl.randomElement([150]), uhigh: hl.randomElement([0.001])},
+			"theory-led": {ulow: hl.randomElement([5]), uhigh: hl.randomElement([150])},
 		};
 
 		const selectedConfig = serendipity_config[features.serendipity];
@@ -811,8 +809,8 @@ class Mover {
 			this.ulow = selectedConfig.ulow;
 			this.uhigh = selectedConfig.uhigh;
 		}
-		this.hueStep = features.colorMode === "iridescent" ? 0.5 : features.colorMode === "dynamic" ? 0.25 : features.colorMode === "variable" ? 0.05 : 0;
-		this.satDir = random([2]);
+		this.hueStep = features.colorMode === "iridescent" ? 0.25 : features.colorMode === "dynamic" ? 0.15 : features.colorMode === "variable" ? 0.05 : 0;
+		this.satDir = 2;
 	}
 
 	show() {
@@ -825,35 +823,35 @@ class Mover {
 		let p = superCurve(this.x, this.y, this.scl1, this.scl2, this.amp1, this.amp2, this.oct, this.nvalue, this.uvalue);
 
 		if (features.autofocus === "autofocus" && features.apertureSetting != "fixed" && features.apertureSetting != "variable fixed") {
-			this.shutterHigh = random([1, 5, 8, 10, 12, 15, 20, 35, 50, 75, 100]);
-			this.apertureHigh = random([1, 2, 5, 10, 25, 50, 75, 100]);
+			this.shutterHigh = hl.randomElement([5, 8, 10, 12, 15, 20, 35, 50, 75, 100]);
+			this.apertureHigh = hl.randomElement([2, 5, 10, 25, 50, 75, 100]);
 		}
 
 		if (features.optics === "focus-in") {
 			//! standard interpolation
-			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterHigh, this.shutterLow, true);
-			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureHigh, this.apertureLow, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 100, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 100, this.apertureHigh, this.apertureLow, true);
 		} else if (features.optics === "focus-out") {
 			//!inverted interpolation
-			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterLow, this.shutterHigh, true);
-			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureLow, this.apertureHigh, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 100, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 100, this.apertureLow, this.apertureHigh, true);
 		} else if (features.optics === "starlight") {
 			//!Mirror interpolation creates more "starrs"
-			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterLow, this.shutterHigh, true);
-			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureHigh, this.apertureLow, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 100, this.shutterLow, this.shutterHigh, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 100, this.apertureHigh, this.apertureLow, true);
 		} else if (features.optics === "mirror") {
 			//!Mirror interpolation config 2
-			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 150, this.shutterHigh, this.shutterLow, true);
-			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 150, this.apertureLow, this.apertureHigh, true);
+			this.lineWeightMax = map(frameCount, 150, MAX_FRAMES - 100, this.shutterHigh, this.shutterLow, true);
+			this.skipperMax = map(frameCount, 150, MAX_FRAMES - 100, this.apertureLow, this.apertureHigh, true);
 		}
 
 		if (features.apertureSetting != "fixed" && features.apertureSetting != "variable fixed") {
 			if (features.apertureSetting === "flowy") {
-				this.xRandSkipperVal = random([0.1, random(0.00001, this.skipperMax)]);
-				this.yRandSkipperVal = random([0.1, random(0.00001, this.skipperMax)]);
+				this.xRandSkipperVal = hl.randomElement([0.1, hl.random(0.00001, this.skipperMax)]);
+				this.yRandSkipperVal = hl.randomElement([0.1, hl.random(0.00001, this.skipperMax)]);
 			} else if (features.apertureSetting === "textured") {
-				this.xRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
-				this.yRandSkipperVal = random([0.01, 0.1, random([0.01, 0.1, this.skipperMax])]);
+				this.xRandSkipperVal = hl.randomElement([0.01, 0.1, hl.randomElement([0.01, 0.1, this.skipperMax])]);
+				this.yRandSkipperVal = hl.randomElement([0.01, 0.1, hl.randomElement([0.01, 0.1, this.skipperMax])]);
 			}
 		}
 		for (let i = 0; i < this.nvalue.length; i++) {
@@ -893,7 +891,7 @@ class Mover {
 
 		this.sat += map(totalSpeed, 0, 600 * MULTIPLIER, -this.satDir, this.satDir, true);
 		if (features.isColored) {
-			this.sat = this.sat > 80 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 80) : this.sat;
+			this.sat = this.sat > 95 ? (this.sat = 0) : this.sat < 0 ? (this.sat = 95) : this.sat;
 		} else {
 			this.sat = 0;
 		}
