@@ -291,12 +291,12 @@ const cosmicOscillationArr = [
 ];
 
 const serendiptyArr = [
-	["error-borne", 50],
+	["error-borne", 70],
 	["error-borne lite", 10],
-	["Walpolian", 10],
-	["Mertonian", 10],
-	["network-emergent", 10],
-	["theory-led", 10],
+	["Walpolian", 5],
+	["Mertonian", 5],
+	["network-emergent", 5],
+	["theory-led", 5],
 ];
 
 const opticsArr = [
