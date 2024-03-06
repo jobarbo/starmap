@@ -240,10 +240,10 @@ const isColoredArr = [
 ];
 
 const colorModeArr = [
-	["fixed", 25],
-	["variable", 25],
-	["dynamic", 25],
-	["iridescent", 25],
+	["fixed", 20],
+	["variable", 50],
+	["dynamic", 20],
+	["iridescent", 10],
 ];
 
 const bgTypeArr = [
@@ -258,8 +258,8 @@ const bgHueArr = [
 ];
 
 const complexityArr = [
-	["1", 90],
-	["2", 6],
+	["1", 95],
+	["2", 1],
 	["3", 1],
 	["4", 1],
 	["5", 1],
@@ -279,24 +279,24 @@ const scaleConfigArr = [
 ];
 
 const dividerConfigArr = [
-	["locked", 30],
-	["unlocked", 70],
+	["locked", 70],
+	["unlocked", 30],
 ];
 
 const cosmicOscillationArr = [
-	["none", 3],
-	["sonification", 1],
+	["none", 1],
+	["sonification", 3],
 	["motion", 1],
 	["full", 95],
 ];
 
 const serendiptyArr = [
 	["error-borne", 70],
-	["error-borne lite", 10],
-	["Walpolian", 5],
-	["Mertonian", 5],
-	["network-emergent", 5],
-	["theory-led", 5],
+	["error-borne lite", 22],
+	["Walpolian", 2],
+	["Mertonian", 2],
+	["network-emergent", 2],
+	["theory-led", 2],
 ];
 
 const opticsArr = [
@@ -319,19 +319,19 @@ const autofocusArr = [
 ];
 
 const shutterSpeedArr = [
-	["very fast", 1],
-	["fast", 9],
+	["very fast", 2],
+	["fast", 4],
 	["normal", 60],
-	["slow", 20],
-	["very slow", 10],
+	["slow", 30],
+	["very slow", 4],
 ];
 
 const apertureSizeArr = [
-	["very large", 5],
-	["large", 20],
-	["normal", 60],
-	["small", 10],
-	["very small", 5],
+	["very large", 2],
+	["large", 10],
+	["normal", 80],
+	["small", 5],
+	["very small", 2],
 ];
 
 const reverbArr = [
