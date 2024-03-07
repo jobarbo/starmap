@@ -511,7 +511,7 @@ let startTime;
 let MAX_FRAMES = 800;
 let C_WIDTH;
 let MULTIPLIER;
-let RATIO = 1;
+let RATIO = 1.333;
 
 let animation;
 let drawing = true;
