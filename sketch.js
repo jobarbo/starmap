@@ -522,6 +522,7 @@ let totalElapsedTime = 0;
 
 let particleNum = 25000;
 let cycle = parseInt((MAX_FRAMES * particleNum) / 1170);
+console.log("cycle", cycle);
 
 let bgSaturation = features.backgroundType === "monochrome" ? 0 : 100;
 let bgHue = features.backgroundHue === "purple" ? 270 : features.backgroundHue === "blue" ? 240 : 290;
@@ -569,6 +570,7 @@ function* drawGenerator() {
 	let count = 0;
 	let frameCount = 0;
 	let draw_every = cycle;
+	console.log("draw_every", draw_every);
 	let looptime = 0;
 	while (true) {
 		for (let i = 0; i < movers.length; i++) {
